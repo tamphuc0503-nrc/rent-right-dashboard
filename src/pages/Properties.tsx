@@ -154,7 +154,7 @@ const properties: PropertyType[] = [
       email: 'thomas@realestate.com',
       image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80'
     }
-  },
+  }
 ];
 
 const Properties = () => {
