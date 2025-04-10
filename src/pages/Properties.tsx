@@ -1,3 +1,4 @@
+
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
@@ -121,7 +122,7 @@ const properties: PropertyType[] = [
     bedrooms: 12,
     bathrooms: 9,
     yearBuilt: 2018,
-    description: 'Modern townhouse development in Seattle's vibrant downtown area. Each unit features high-end finishes, energy-efficient systems, and private outdoor spaces.',
+    description: 'Modern townhouse development in Seattle\'s vibrant downtown area. Each unit features high-end finishes, energy-efficient systems, and private outdoor spaces.',
     amenities: ['Energy Efficient', 'Private Patios', 'Garage Parking', 'Community Garden', 'Pet Friendly', 'Bike Storage'],
     agent: {
       name: 'Emma Nguyen',
