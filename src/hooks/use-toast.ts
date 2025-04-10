@@ -57,6 +57,7 @@ interface State {
 const ToastContext = React.createContext<{
   state: State
   dispatch: React.Dispatch<Action>
+  addToRemoveQueue: (toastId: string) => void
 } | undefined>(undefined)
 
 // Create an initial state
@@ -112,7 +113,7 @@ export const reducer = (state: State, action: Action): State => {
 // Provider component that wraps your app and makes toast state available
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = React.useReducer(reducer, initialState)
-  const toastTimeouts = React.useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const toastTimeouts = React.useRef(new Map<string, ReturnType<typeof setTimeout>>())
 
   const addToRemoveQueue = React.useCallback((toastId: string) => {
     if (toastTimeouts.current.has(toastId)) {
