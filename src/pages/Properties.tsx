@@ -2,15 +2,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
-import PropertyDetail, { PropertyType } from '@/components/PropertyDetail';
-import AddPropertyDialog from '@/components/AddPropertyDialog';
+import PropertyDetail from '@/components/property/PropertyDetail';
+import AddPropertyDialog from '@/components/property/AddPropertyDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Filter, Home, Building } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { PropertyDetailType } from '@/types/propertyDetail';
+import { PropertyAddress } from '@/types/property';
 
-const properties: PropertyType[] = [
+const properties: PropertyAddress[] = [
   { 
     id: 1, 
     address: '123 Main St', 
@@ -161,9 +163,9 @@ const Properties = () => {
   const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
+  const [selectedProperty, setSelectedProperty] = useState<PropertyDetailType | null>(null);
   const [showAddPropertyDialog, setShowAddPropertyDialog] = useState(false);
-  const [propertiesList, setPropertiesList] = useState<PropertyType[]>(properties);
+  const [propertiesList, setPropertiesList] = useState<PropertyDetailType[]>(properties);
   const { toast } = useToast();
   
   const filteredProperties = propertiesList.filter(property => 
@@ -172,12 +174,12 @@ const Properties = () => {
     property.type.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewProperty = (property: PropertyType) => {
+  const handleViewProperty = (property: PropertyDetailType) => {
     setSelectedProperty(property);
   };
   
-  const handleAddProperty = (propertyData: any) => {
-    const newProperty: PropertyType = {
+  const handleAddProperty = (propertyData: PropertyAddress) => {
+    const newProperty: PropertyDetailType = {
       id: propertiesList.length + 1,
       address: propertyData.address,
       city: propertyData.city,
