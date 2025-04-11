@@ -36,6 +36,79 @@ const properties: PropertyDetailType[] = [
       phone: '(212) 555-1234',
       email: 'jessica@realestate.com',
       image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80'
+    },
+    images: [
+      'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+      'https://images.unsplash.com/photo-1576941089067-2de3c901e126?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+      'https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+      'https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+      'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+    ],
+    status: {
+      offer: 'Special Offer',
+      condition: 'New Construction'
+    },
+    facts: {
+      interior: {
+        bedrooms: 24,
+        bathrooms: 12,
+        fullBathrooms: 12,
+        halfBathrooms: 0,
+        appliances: ['Refrigerator', 'Dishwasher', 'Washer', 'Dryer', 'Microwave'],
+        flooring: ['Hardwood', 'Tile'],
+        heatingType: 'Central',
+        coolingType: 'Central AC'
+      },
+      exterior: {
+        lotSize: '0.25 acres',
+        parking: 'Street parking',
+        mailbox: 'Individual mailboxes in lobby',
+        parcelNumber: 'NYC-10001-123'
+      },
+      garage: {
+        type: 'Underground garage',
+        capacity: 6
+      },
+      community: {
+        hoa: '$500/month',
+        communityName: 'Manhattan Luxury Apartments',
+        location: 'Midtown Manhattan',
+        financialDetails: 'FHA approved'
+      },
+      construction: {
+        builder: 'CityBuild Construction',
+        yearBuilt: 1998,
+        homeType: 'Apartment Building',
+        propertySubType: 'Mid-rise'
+      },
+      services: {
+        parks: ['Central Park', 'Bryant Park'],
+        walkingScore: 95,
+        bikeScore: 75,
+        internetProviders: ['Spectrum', 'Verizon Fios', 'AT&T'],
+        tvProviders: ['Spectrum', 'DirecTV', 'Dish Network']
+      },
+      schools: {
+        elementary: [
+          { name: 'PS 116 Elementary', score: 8, distance: '0.3 miles' },
+          { name: 'PS 40 Elementary', score: 7, distance: '0.8 miles' }
+        ],
+        middle: [
+          { name: 'JHS 104 Middle School', score: 6, distance: '1.2 miles' }
+        ],
+        high: [
+          { name: 'Stuyvesant High School', score: 9, distance: '1.5 miles' },
+          { name: 'Millennium High School', score: 8, distance: '2.1 miles' }
+        ]
+      }
+    },
+    realtor: {
+      name: 'Jessica Parker',
+      phone: '(212) 555-1234',
+      email: 'jessica@realestate.com',
+      image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80',
+      company: 'NYC Premier Realty',
+      license: 'NY-RES-123456'
     }
   },
   { 

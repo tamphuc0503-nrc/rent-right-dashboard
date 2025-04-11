@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PropertyDetailType } from '@/types/propertyDetail';
 import PropertyHeader from './detail/PropertyHeader';
 import PropertyOverview from './detail/PropertyOverview';
-import PropertyAmenities from './detail/PropertyAmenities';
+import PropertyFeatures from './detail/PropertyFeatures';
 import PropertyContact from './detail/PropertyContact';
 
 interface PropertyDetailProps {
@@ -16,8 +17,6 @@ interface PropertyDetailProps {
 }
 
 const PropertyDetail = ({ property, isOpen, onClose }: PropertyDetailProps) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'amenities' | 'contact'>('overview');
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
@@ -26,38 +25,28 @@ const PropertyDetail = ({ property, isOpen, onClose }: PropertyDetailProps) => {
           <span className="sr-only">Close</span>
         </DialogClose>
         
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">{property.address}</DialogTitle>
-          <p className="text-gray-600">{property.city}, {property.state}</p>
-        </DialogHeader>
-        
         <PropertyHeader property={property} />
         
         <div className="mt-6">
-          <div className="flex border-b">
-            <button 
-              className={`px-4 py-2 font-medium ${activeTab === 'overview' ? 'border-b-2 border-realestate-700 text-realestate-700' : 'text-gray-600'}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Overview
-            </button>
-            <button 
-              className={`px-4 py-2 font-medium ${activeTab === 'amenities' ? 'border-b-2 border-realestate-700 text-realestate-700' : 'text-gray-600'}`}
-              onClick={() => setActiveTab('amenities')}
-            >
-              Amenities
-            </button>
-            <button 
-              className={`px-4 py-2 font-medium ${activeTab === 'contact' ? 'border-b-2 border-realestate-700 text-realestate-700' : 'text-gray-600'}`}
-              onClick={() => setActiveTab('contact')}
-            >
-              Contact
-            </button>
-          </div>
-          
-          {activeTab === 'overview' && <PropertyOverview property={property} />}
-          {activeTab === 'amenities' && <PropertyAmenities property={property} />}
-          {activeTab === 'contact' && <PropertyContact property={property} />}
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="features">Facts & Features</TabsTrigger>
+              <TabsTrigger value="contact">Contact</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="mt-4">
+              <PropertyOverview property={property} />
+            </TabsContent>
+            
+            <TabsContent value="features" className="mt-4">
+              <PropertyFeatures property={property} />
+            </TabsContent>
+            
+            <TabsContent value="contact" className="mt-4">
+              <PropertyContact property={property} />
+            </TabsContent>
+          </Tabs>
         </div>
         
         <div className="mt-6 flex justify-end">
