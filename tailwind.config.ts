@@ -64,17 +64,18 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				realestate: {
-					50: '#EFF6FF',
-					100: '#DBEAFE',
-					200: '#BFDBFE',
-					300: '#93C5FD',
-					400: '#60A5FA',
-					500: '#3B82F6',
-					600: '#2563EB',
-					700: '#1D4ED8',
-					800: '#1E40AF',
-					900: '#1E3A8A',
+					50: '#f7fafc',
+					100: '#e2e8f0',
+					200: '#cbd5e0',
+					300: '#a0aec0',
+					400: '#718096',
+					500: '#2c7a7b',
+					600: '#285e61',
+					700: '#1a365d',
+					800: '#153e75',
+					900: '#1a365d',
 					950: '#1a365d',
+					gold: '#ecc94b',
 				}
 			},
 			borderRadius: {
@@ -98,11 +99,45 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'scale-in': {
+					'0%': {
+						transform: 'scale(0.95)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out',
+				'scale-in': 'scale-in 0.2s ease-out',
+			},
+			fontFamily: {
+				sans: [
+					'system-ui', 
+					'-apple-system', 
+					'BlinkMacSystemFont', 
+					'"Segoe UI"', 
+					'Roboto', 
+					'"Helvetica Neue"', 
+					'Arial', 
+					'sans-serif'
+				]
 			}
 		}
 	},
