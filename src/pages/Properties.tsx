@@ -11,8 +11,9 @@ import { Plus, Search, Filter, Home, Building } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PropertyDetailType } from '@/types/propertyDetail';
 import { PropertyAddress } from '@/types/property';
+import { PropertyTypeIcon } from '@/components/property/PropertyTypeIcon';
 
-const properties: PropertyAddress[] = [
+const properties: PropertyDetailType[] = [
   { 
     id: 1, 
     address: '123 Main St', 
@@ -292,7 +293,7 @@ const Properties = () => {
                     <p className="text-gray-600">{property.city}, {property.state}</p>
                     <div className="flex justify-between items-center mt-4">
                       <div className="flex items-center">
-                        <Building className="h-4 w-4 text-gray-500 mr-1" />
+                        <PropertyTypeIcon type={property.type} className="h-4 w-4 text-gray-500 mr-1" />
                         <span className="text-sm text-gray-600">{property.type}</span>
                       </div>
                       <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">

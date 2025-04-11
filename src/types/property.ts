@@ -9,6 +9,9 @@ export interface PropertyAddress {
   zipCode: string;
   propertyType: string;
   units: number;
+  type?: string;  // Added for backward compatibility
+  occupancyRate?: string;  // Added for backward compatibility
+  image?: string;  // Added for backward compatibility
 }
 
 export interface PropertyType {

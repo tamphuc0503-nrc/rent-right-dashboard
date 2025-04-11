@@ -23,4 +23,6 @@ export interface PropertyDetailType {
     email: string;
     image: string;
   };
+  // Optional fields for compatibility with PropertyAddress
+  propertyType?: string;
 }
