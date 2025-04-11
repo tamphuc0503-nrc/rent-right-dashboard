@@ -5,7 +5,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 5000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -52,14 +52,12 @@ interface State {
   toasts: ToasterToast[]
 }
 
-// Create a React context to hold the toast state
 const ToastContext = React.createContext<{
   state: State
   dispatch: React.Dispatch<Action>
   addToRemoveQueue: (toastId: string) => void
 } | undefined>(undefined)
 
-// Create an initial state
 const initialState: State = {
   toasts: [],
 }
@@ -109,7 +107,6 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-// Provider component that wraps your app and makes toast state available
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = React.useReducer(reducer, initialState)
   const toastTimeouts = React.useRef(new Map<string, ReturnType<typeof setTimeout>>())
@@ -153,7 +150,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 type Toast = Omit<ToasterToast, "id">
 
-// Define the standalone toast function first
 function createToast({ ...props }: Toast) {
   return {
     id: genId(),
@@ -162,13 +158,10 @@ function createToast({ ...props }: Toast) {
   }
 }
 
-// Hook to use the toast context
 export function useToast() {
   const context = React.useContext(ToastContext)
   
   if (context === undefined) {
-    // Instead of throwing an error, we'll return a dummy implementation
-    // This makes it safer to use outside of the provider (though it won't do anything)
     return {
       toasts: [],
       toast: createToast,
@@ -221,5 +214,4 @@ export function useToast() {
   }
 }
 
-// Export the standalone function
 export const toast = createToast;

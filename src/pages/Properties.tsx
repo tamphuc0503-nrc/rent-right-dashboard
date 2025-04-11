@@ -1,15 +1,15 @@
-
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import PropertyDetail, { PropertyType } from '@/components/PropertyDetail';
+import AddPropertyDialog from '@/components/AddPropertyDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Filter, Home, Building } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-// Extended property data with more details like Zillow
 const properties: PropertyType[] = [
   { 
     id: 1, 
@@ -162,8 +162,11 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedProperty, setSelectedProperty] = useState<PropertyType | null>(null);
+  const [showAddPropertyDialog, setShowAddPropertyDialog] = useState(false);
+  const [propertiesList, setPropertiesList] = useState<PropertyType[]>(properties);
+  const { toast } = useToast();
   
-  const filteredProperties = properties.filter(property => 
+  const filteredProperties = propertiesList.filter(property => 
     property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
     property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
     property.type.toLowerCase().includes(searchTerm.toLowerCase())
@@ -171,6 +174,26 @@ const Properties = () => {
 
   const handleViewProperty = (property: PropertyType) => {
     setSelectedProperty(property);
+  };
+  
+  const handleAddProperty = (propertyData: any) => {
+    const newProperty: PropertyType = {
+      id: propertiesList.length + 1,
+      address: propertyData.address,
+      city: propertyData.city,
+      state: propertyData.state,
+      type: propertyData.propertyType,
+      units: propertyData.units,
+      occupancyRate: '0%',
+      image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60',
+      zipCode: propertyData.zipCode,
+    };
+    
+    setPropertiesList([newProperty, ...propertiesList]);
+    toast({
+      title: "Property Added",
+      description: `${propertyData.address} has been added to your properties.`,
+    });
   };
   
   return (
@@ -187,7 +210,10 @@ const Properties = () => {
               <p className="text-gray-600">Manage your real estate properties</p>
             </div>
             
-            <Button className="mt-4 sm:mt-0 bg-realestate-700 hover:bg-realestate-800">
+            <Button 
+              className="mt-4 sm:mt-0 bg-realestate-700 hover:bg-realestate-800"
+              onClick={() => setShowAddPropertyDialog(true)}
+            >
               <Home className="h-4 w-4 mr-2" />
               Add New Property
             </Button>
@@ -337,6 +363,12 @@ const Properties = () => {
           onClose={() => setSelectedProperty(null)} 
         />
       )}
+      
+      <AddPropertyDialog 
+        isOpen={showAddPropertyDialog}
+        onClose={() => setShowAddPropertyDialog(false)}
+        onAddProperty={handleAddProperty}
+      />
     </div>
   );
 };
