@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import type {
   ToastActionElement,
@@ -152,6 +151,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
+type Toast = Omit<ToasterToast, "id">
+
+// Define the standalone toast function first
+function createToast({ ...props }: Toast) {
+  return {
+    id: genId(),
+    dismiss: () => {},
+    update: () => {},
+  }
+}
+
 // Hook to use the toast context
 export function useToast() {
   const context = React.useContext(ToastContext)
@@ -161,7 +171,7 @@ export function useToast() {
     // This makes it safer to use outside of the provider (though it won't do anything)
     return {
       toasts: [],
-      toast,
+      toast: createToast,
       dismiss: () => {},
     }
   }
@@ -211,17 +221,5 @@ export function useToast() {
   }
 }
 
-type Toast = Omit<ToasterToast, "id">
-
-// A standalone function to create toasts without the hook
-function toast({ ...props }: Toast) {
-  // This is a no-op when used outside the context
-  // We'll rely on the Sonner toast library for direct toast calls
-  return {
-    id: genId(),
-    dismiss: () => {},
-    update: () => {},
-  }
-}
-
-export { toast }
+// Export the standalone function
+export const toast = createToast;
