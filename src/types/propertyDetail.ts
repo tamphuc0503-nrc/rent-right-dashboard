@@ -22,6 +22,8 @@ export interface PropertyDetailType {
     phone: string;
     email: string;
     image: string;
+    company?: string;
+    license?: string;
   };
   // New fields for enhanced property detail
   images?: string[];
