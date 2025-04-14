@@ -12,7 +12,7 @@ const PropertyOverview: React.FC<PropertyOverviewProps> = ({ property }) => {
   const fullAddress = `${property.address}, ${property.city}, ${property.state}${property.zipCode ? ` ${property.zipCode}` : ''}`;
 
   return (
-    <div className="mt-4">
+    <div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
           <Building className="h-5 w-5 text-realestate-700 mb-1" />
