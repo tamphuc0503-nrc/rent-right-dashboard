@@ -14,6 +14,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import OrderActions from "@/components/OrderActions";
+import { useToast } from "@/hooks/use-toast";
 
 type InspectionOrder = {
   id: string;
@@ -25,7 +26,7 @@ type InspectionOrder = {
   cost: number;
 };
 
-const dummyOrders: InspectionOrder[] = [
+const initialOrders: InspectionOrder[] = [
   {
     id: "1",
     orderNumber: "ORD-10001",
@@ -86,6 +87,8 @@ const statusColors: Record<InspectionOrder["status"], string> = {
 const Orders = () => {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
+  const [orders, setOrders] = useState<InspectionOrder[]>(initialOrders);
+  const { toast } = useToast();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -95,7 +98,22 @@ const Orders = () => {
     alert("Add inspection order clicked!");
   };
 
-  const orders = dummyOrders.filter(order => {
+  const handleChangeStatus = (orderId: string, newStatus: InspectionOrder["status"]) => {
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === orderId
+          ? { ...order, status: newStatus }
+          : order
+      )
+    );
+    toast({
+      title: "Status Changed",
+      description: `Order #${orders.find(o => o.id === orderId)?.orderNumber} is now "${newStatus.replace(/^\w/, c => c.toUpperCase())}".`,
+      duration: 2000,
+    });
+  };
+
+  const filteredOrders = orders.filter(order => {
     const q = search.toLowerCase();
     return (
       order.orderNumber.toLowerCase().includes(q) ||
@@ -138,7 +156,7 @@ const Orders = () => {
             </Button>
           </div>
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {orders.length === 0 ? (
+            {filteredOrders.length === 0 ? (
               <div className="p-6 flex items-center justify-center text-gray-500">
                 <span>No inspection orders found.</span>
               </div>
@@ -156,14 +174,14 @@ const Orders = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map(order => (
+                  {filteredOrders.map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">{order.orderNumber}</TableCell>
                       <TableCell>{order.propertyAddress}</TableCell>
                       <TableCell>{order.inspectorName}</TableCell>
                       <TableCell>{order.inspectionDate}</TableCell>
                       <TableCell>
-                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
                           {order.status.replace(/^\w/, c => c.toUpperCase())}
                         </span>
                       </TableCell>
@@ -176,6 +194,8 @@ const Orders = () => {
                           onEdit={() => alert(`Edit order #${order.orderNumber}`)}
                           onSchedule={() => alert(`Schedule order #${order.orderNumber}`)}
                           onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                          onChangeStatus={(s) => handleChangeStatus(order.id, s)}
+                          currentStatus={order.status}
                         />
                       </TableCell>
                     </TableRow>
