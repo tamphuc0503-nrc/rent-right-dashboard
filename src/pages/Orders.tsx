@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -14,6 +13,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
+import OrderActions from "@/components/OrderActions";
 
 type InspectionOrder = {
   id: string;
@@ -95,7 +95,6 @@ const Orders = () => {
     alert("Add inspection order clicked!");
   };
 
-  // Simple case-insensitive search across several fields
   const orders = dummyOrders.filter(order => {
     const q = search.toLowerCase();
     return (
@@ -153,6 +152,7 @@ const Orders = () => {
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Cost</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -169,6 +169,14 @@ const Orders = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <OrderActions
+                          onView={() => alert(`View order #${order.orderNumber}`)}
+                          onEdit={() => alert(`Edit order #${order.orderNumber}`)}
+                          onSchedule={() => alert(`Schedule order #${order.orderNumber}`)}
+                          onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
