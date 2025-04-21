@@ -1,5 +1,7 @@
 
-import { useState } from "react";
+import { useIsMobile } from '@/hooks/use-mobile';
+import Sidebar from '@/components/Sidebar';
+import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
@@ -81,6 +83,7 @@ const statusColors: Record<InspectionOrder["status"], string> = {
 };
 
 const Orders = () => {
+  const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,64 +107,75 @@ const Orders = () => {
   });
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Inspection Orders</h1>
-        <Button
-          onClick={handleAddClick}
-          className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200 hover-scale"
-          size="lg"
-        >
-          <Plus className="w-5 h-5" />
-          Add inspection order
-        </Button>
-      </div>
-      <div className="mb-6">
-        <Input
-          type="search"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search inspection orders…"
-          className="w-full max-w-md"
-        />
-      </div>
-      <div className="mt-8 rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-        {orders.length === 0 ? (
-          <div className="p-6 flex items-center justify-center text-gray-500">
-            <span>No inspection orders found.</span>
+    <div className="min-h-screen flex bg-gray-50">
+      <Sidebar isMobile={isMobile} />
+      <div className={`flex-1 ${isMobile ? '' : 'ml-64'}`}>
+        <DashboardHeader />
+        <main className="p-6">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Inspection Orders</h1>
+            <p className="text-gray-600">
+              Manage and track your inspection orders.
+            </p>
           </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order #</TableHead>
-                <TableHead>Property Address</TableHead>
-                <TableHead>Inspector</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Cost</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map(order => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                  <TableCell>{order.propertyAddress}</TableCell>
-                  <TableCell>{order.inspectorName}</TableCell>
-                  <TableCell>{order.inspectionDate}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
-                      {order.status.replace(/^\w/, c => c.toUpperCase())}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+            <div className="w-full sm:w-auto flex-1">
+              <Input
+                type="search"
+                value={search}
+                onChange={handleSearchChange}
+                placeholder="Search inspection orders…"
+                className="w-full max-w-md"
+              />
+            </div>
+            <Button
+              onClick={handleAddClick}
+              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200"
+              size="lg"
+            >
+              <Plus className="w-5 h-5" />
+              Add inspection order
+            </Button>
+          </div>
+          <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
+            {orders.length === 0 ? (
+              <div className="p-6 flex items-center justify-center text-gray-500">
+                <span>No inspection orders found.</span>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order #</TableHead>
+                    <TableHead>Property Address</TableHead>
+                    <TableHead>Inspector</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Cost</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.map(order => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium">{order.orderNumber}</TableCell>
+                      <TableCell>{order.propertyAddress}</TableCell>
+                      <TableCell>{order.inspectorName}</TableCell>
+                      <TableCell>{order.inspectionDate}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
+                          {order.status.replace(/^\w/, c => c.toUpperCase())}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
