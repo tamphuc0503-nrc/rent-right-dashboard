@@ -1,4 +1,3 @@
-
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import Tenants from "./pages/Tenants";
 import Properties from "./pages/Properties";
 import NotFound from "./pages/NotFound";
+import Orders from "./pages/Orders";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +29,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tenants" element={<Tenants />} />
             <Route path="/properties" element={<Properties />} />
-            {/* Additional routes would go here */}
+            <Route path="/orders" element={<Orders />} />
             <Route path="/services" element={<NotFound />} />
             <Route path="/pricing" element={<NotFound />} />
             <Route path="/articles" element={<NotFound />} />

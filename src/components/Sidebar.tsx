@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -10,7 +9,9 @@ import {
   Settings,
   CreditCard,
   Menu,
-  X
+  X,
+  ClipboardList,
+  Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,6 +47,11 @@ const sidebarItems: SidebarItem[] = [
     title: 'Properties',
     icon: Building,
     path: '/properties',
+  },
+  {
+    title: 'Orders',
+    icon: ClipboardList,
+    path: '/orders',
   },
   {
     title: 'Settings',
