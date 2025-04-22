@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -16,6 +17,36 @@ import {
 import OrderActions from "@/components/OrderActions";
 import { useToast } from "@/hooks/use-toast";
 
+const generateSampleOrders = (count: number) => {
+  const statuses = [
+    "pending",
+    "scheduled",
+    "in progress",
+    "inspected",
+    "reported",
+    "completed",
+    "cancelled",
+  ] as const;
+
+  // For more realistic dates and status order cycling
+  const today = new Date();
+
+  return Array.from({ length: count }, (_, idx) => {
+    const status = statuses[idx % statuses.length];
+    const day = (idx % 28) + 1; // spread out dates
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + day);
+    return {
+      id: (idx + 1).toString(),
+      orderNumber: `ORD-${(10001 + idx).toString().padStart(5, "0")}`,
+      propertyAddress: `${(100 + idx)} Elm St, City${idx % 10}`,
+      inspectorName: ["Alice Johnson", "Bob Smith", "Carlos Lee", "Dana Kim", "Evan Turner"][(idx % 5)],
+      inspectionDate: date.toISOString().slice(0, 10),
+      status: status,
+      cost: status === "cancelled" ? 0 : 250 + (idx % 5) * 10,
+    };
+  });
+};
+
 type InspectionOrder = {
   id: string;
   orderNumber: string;
@@ -25,54 +56,6 @@ type InspectionOrder = {
   status: "pending" | "cancelled" | "scheduled" | "in progress" | "inspected" | "reported" | "completed";
   cost: number;
 };
-
-const initialOrders: InspectionOrder[] = [
-  {
-    id: "1",
-    orderNumber: "ORD-10001",
-    propertyAddress: "123 Main St, Springfield",
-    inspectorName: "Alice Johnson",
-    inspectionDate: "2025-04-25",
-    status: "pending",
-    cost: 250,
-  },
-  {
-    id: "2",
-    orderNumber: "ORD-10002",
-    propertyAddress: "456 Elm St, Rivertown",
-    inspectorName: "Bob Smith",
-    inspectionDate: "2025-04-26",
-    status: "scheduled",
-    cost: 300,
-  },
-  {
-    id: "3",
-    orderNumber: "ORD-10003",
-    propertyAddress: "789 Oak Ave, Pineville",
-    inspectorName: "Carlos Lee",
-    inspectionDate: "2025-04-27",
-    status: "in progress",
-    cost: 275,
-  },
-  {
-    id: "4",
-    orderNumber: "ORD-10004",
-    propertyAddress: "321 Maple Dr, Lakeside",
-    inspectorName: "Dana Kim",
-    inspectionDate: "2025-04-28",
-    status: "completed",
-    cost: 260,
-  },
-  {
-    id: "5",
-    orderNumber: "ORD-10005",
-    propertyAddress: "555 Walnut Rd, Hillview",
-    inspectorName: "Evan Turner",
-    inspectionDate: "2025-04-29",
-    status: "cancelled",
-    cost: 0,
-  },
-];
 
 const statusColors: Record<InspectionOrder["status"], string> = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -84,14 +67,32 @@ const statusColors: Record<InspectionOrder["status"], string> = {
   completed: "bg-green-200 text-green-900",
 };
 
+const ORDERS_PER_PAGE = 10;
+
 const Orders = () => {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState<InspectionOrder[]>(initialOrders);
+  const [orders, setOrders] = useState<InspectionOrder[]>(generateSampleOrders(100));
   const { toast } = useToast();
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(
+    orders.filter(order => {
+      const q = search.toLowerCase();
+      return (
+        order.orderNumber.toLowerCase().includes(q) ||
+        order.propertyAddress.toLowerCase().includes(q) ||
+        order.inspectorName.toLowerCase().includes(q) ||
+        order.inspectionDate.toLowerCase().includes(q) ||
+        order.status.toLowerCase().includes(q)
+      );
+    }).length / ORDERS_PER_PAGE
+  );
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
+    setPage(1);
   };
 
   const handleAddClick = () => {
@@ -113,6 +114,7 @@ const Orders = () => {
     });
   };
 
+  // Search and Pagination
   const filteredOrders = orders.filter(order => {
     const q = search.toLowerCase();
     return (
@@ -123,6 +125,14 @@ const Orders = () => {
       order.status.toLowerCase().includes(q)
     );
   });
+
+  // Orders for current page
+  const startIdx = (page - 1) * ORDERS_PER_PAGE;
+  const endIdx = startIdx + ORDERS_PER_PAGE;
+  const paginatedOrders = filteredOrders.slice(startIdx, endIdx);
+
+  // If current page is now out of range, go back to last available page
+  if (page > totalPages && totalPages > 0) setPage(totalPages);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -156,7 +166,7 @@ const Orders = () => {
             </Button>
           </div>
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {filteredOrders.length === 0 ? (
+            {paginatedOrders.length === 0 ? (
               <div className="p-6 flex items-center justify-center text-gray-500">
                 <span>No inspection orders found.</span>
               </div>
@@ -174,7 +184,7 @@ const Orders = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredOrders.map(order => (
+                  {paginatedOrders.map(order => (
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">{order.orderNumber}</TableCell>
                       <TableCell>{order.propertyAddress}</TableCell>
@@ -203,6 +213,28 @@ const Orders = () => {
                 </TableBody>
               </Table>
             )}
+          </div>
+          {/* Pagination controls */}
+          <div className="flex justify-between items-center mt-6">
+            <Button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4"
+              variant="outline"
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-700">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || totalPages === 0}
+              className="px-4"
+              variant="outline"
+            >
+              Next
+            </Button>
           </div>
         </main>
       </div>
