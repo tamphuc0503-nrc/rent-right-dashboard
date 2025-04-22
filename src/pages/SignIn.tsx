@@ -10,32 +10,59 @@ import { Mail, Lock, AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
 
+const DUMMY_API_URL = "https://jsonplaceholder.typicode.com/posts"; // Using dummy url
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignIn = (e: React.FormEvent) => {
+  // Helper to simulate a token response regardless of payload
+  async function signInApiRequest() {
+    // Simulate network latency with a delay
+    await new Promise((res) => setTimeout(res, 600));
+    // We'll always "fetch", but then ignore the network result and return static
+    return {
+      success: true,
+      data: {
+        access_token: "dummy-token-x123",
+        expires_date: new Date(Date.now() + 86400000).toISOString(), // 1 day from now
+        refresh_token: "dummy-refresh-y789",
+      }
+    }
+  }
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate authentication
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
       if (email && password) {
-        toast.success('Successfully signed in!');
-        navigate('/dashboard');
+        // Simulate API call
+        const response = await signInApiRequest();
+
+        if (response.success && response.data) {
+          const { access_token, expires_date, refresh_token } = response.data;
+          localStorage.setItem('access_token', access_token);
+          localStorage.setItem('expires_date', expires_date);
+          localStorage.setItem('refresh_token', refresh_token);
+          toast.success('Successfully signed in!');
+          navigate('/dashboard');
+        } else {
+          toast.error('Invalid credentials');
+        }
       } else {
         toast.error('Please enter both email and password');
       }
-    }, 1000);
+    } catch (err) {
+      toast.error('Something went wrong during sign in');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
     setIsLoading(true);
-    
-    // Simulate Google authentication
     setTimeout(() => {
       setIsLoading(false);
       toast.success('Successfully signed in with Google!');
@@ -45,8 +72,6 @@ const SignIn = () => {
 
   const handleSSOSignIn = () => {
     setIsLoading(true);
-    
-    // Simulate SSO authentication
     setTimeout(() => {
       setIsLoading(false);
       toast.success('Successfully signed in with SSO!');
@@ -57,7 +82,6 @@ const SignIn = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
       <div className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-gray-50">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
@@ -66,7 +90,6 @@ const SignIn = () => {
               Enter your credentials to access your account
             </CardDescription>
           </CardHeader>
-          
           <CardContent>
             <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-2">
@@ -84,7 +107,6 @@ const SignIn = () => {
                   />
                 </div>
               </div>
-              
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
@@ -105,12 +127,10 @@ const SignIn = () => {
                   />
                 </div>
               </div>
-              
               <Button type="submit" className="w-full bg-realestate-700 hover:bg-realestate-800" disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
-            
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -120,7 +140,6 @@ const SignIn = () => {
                   <span className="bg-white px-2 text-gray-500">Or continue with</span>
                 </div>
               </div>
-              
               <div className="mt-6 space-y-3">
                 <Button 
                   variant="outline" 
@@ -138,7 +157,6 @@ const SignIn = () => {
                   </svg>
                   Sign in with Google
                 </Button>
-                
                 <Button 
                   variant="outline" 
                   className="w-full" 
@@ -151,7 +169,6 @@ const SignIn = () => {
               </div>
             </div>
           </CardContent>
-          
           <CardFooter className="flex flex-col">
             <p className="text-center text-sm text-gray-600 mt-2">
               Don't have an account?{' '}
