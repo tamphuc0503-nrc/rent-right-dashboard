@@ -34,9 +34,14 @@ const sidebarItems: SidebarItem[] = [
     path: '/tenants',
   },
   {
-    title: 'Vendors',
+    title: 'Inspectors',
     icon: UserCircle,
-    path: '/vendors',
+    path: '/inspectors',
+  },
+  {
+    title: 'Companies',
+    icon: Building,
+    path: '/companies',
   },
   {
     title: 'Landlords',
