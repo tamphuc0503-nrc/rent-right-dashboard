@@ -12,7 +12,9 @@ import {
   X,
   ClipboardList,
   Plus,
-  Calendar
+  Calendar,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -40,11 +42,8 @@ const sidebarItems: SidebarItem[] = [
     icon: Calendar,
     path: '/calendar',
     subItems: [
-      { title: 'Next Week', path: '/calendar/upcoming/1week' },
-      { title: '2 Weeks', path: '/calendar/upcoming/2weeks' },
-      { title: '3 Weeks', path: '/calendar/upcoming/3weeks' },
-      { title: '4 Weeks', path: '/calendar/upcoming/4weeks' },
       { title: 'Scheduling Calendar', path: '/calendar/scheduling' },
+      { title: 'My Upcoming Orders', path: '/calendar/upcoming/orders' },
     ],
   },
   {
@@ -139,8 +138,20 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                       !isOpen && "justify-center"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", location.pathname === item.path ? "text-realestate-700" : "text-gray-500")} />
-                    {isOpen && <span className="ml-3 font-medium">{item.title}</span>}
+                    <item.icon className={cn(
+                      "h-5 w-5",
+                      location.pathname === item.path ? "text-realestate-700" : "text-gray-500"
+                    )} />
+                    {isOpen && (
+                      <>
+                        <span className="ml-3 font-medium flex-1">{item.title}</span>
+                        {item.subItems && (
+                          expandedItem === item.title ? 
+                            <ChevronDown className="h-4 w-4" /> : 
+                            <ChevronRight className="h-4 w-4" />
+                        )}
+                      </>
+                    )}
                   </Link>
                   
                   {isOpen && item.subItems && expandedItem === item.title && (

@@ -34,7 +34,7 @@ const SchedulingCalendar = () => {
         <DashboardHeader />
         <main className="p-6">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Scheduling Calendar</h1>
+            <h1 className="text-2xl font-bold text-gray-900">My Upcoming Orders</h1>
             <div className="flex flex-wrap gap-2">
               {timeRanges.map((range, index) => (
                 <Button

@@ -44,7 +44,7 @@ const App = () => (
             <Route path="/settings" element={<NotFound />} />
             <Route path="/subscriptions" element={<NotFound />} />
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
-            <Route path="/calendar/upcoming/:period" element={<SchedulingCalendar />} />
+            <Route path="/calendar/upcoming/orders" element={<SchedulingCalendar />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
