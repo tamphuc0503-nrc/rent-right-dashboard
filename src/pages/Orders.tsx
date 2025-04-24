@@ -46,6 +46,13 @@ const generateSampleOrders = (count: number) => {
   });
 };
 
+type Activity = {
+  id: string;
+  date: string;
+  type: string;
+  description: string;
+};
+
 type InspectionOrder = {
   id: string;
   orderNumber: string;
@@ -54,6 +61,7 @@ type InspectionOrder = {
   inspectionDate: string;
   status: "pending" | "cancelled" | "scheduled" | "in progress" | "inspected" | "reported" | "completed";
   cost: number;
+  activities?: Activity[];
 };
 
 const statusColors: Record<InspectionOrder["status"], string> = {
