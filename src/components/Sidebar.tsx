@@ -29,45 +29,47 @@ const sidebarItems: SidebarItem[] = [
     path: '/dashboard',
   },
   {
-    title: 'Tenants',
-    icon: Users,
-    path: '/tenants',
-  },
-  {
-    title: 'Inspectors',
-    icon: UserCircle,
-    path: '/inspectors',
-  },
-  {
-    title: 'Companies',
-    icon: Building,
-    path: '/companies',
-  },
-  {
-    title: 'Landlords',
-    icon: Users,
-    path: '/landlords',
+    title: 'Orders',
+    icon: ClipboardList,
+    path: '/orders',
   },
   {
     title: 'Properties',
     icon: Building,
     path: '/properties',
   },
+  // {
+  //   title: 'Tenants',
+  //   icon: Users,
+  //   path: '/tenants',
+  // },
   {
-    title: 'Orders',
-    icon: ClipboardList,
-    path: '/orders',
+    title: 'Inspectors',
+    icon: UserCircle,
+    path: '/inspectors',
   },
+
+  {
+    title: 'Companies',
+    icon: Building,
+    path: '/companies',
+  },
+  // {
+  //   title: 'Landlords',
+  //   icon: Users,
+  //   path: '/landlords',
+  // },
+
   {
     title: 'Settings',
     icon: Settings,
     path: '/settings',
   },
-  {
-    title: 'Subscriptions',
-    icon: CreditCard,
-    path: '/subscriptions',
-  },
+  // {
+  //   title: 'Subscriptions',
+  //   icon: CreditCard,
+  //   path: '/subscriptions',
+  // },
 ];
 
 type SidebarProps = {
@@ -85,16 +87,16 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
   return (
     <>
       {isMobile && (
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="fixed top-4 left-4 z-50 md:hidden"
           onClick={toggleSidebar}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </Button>
       )}
-      
+
       <aside className={cn(
         "flex flex-col bg-sidebar h-screen fixed top-0 left-0 z-40 border-r border-gray-200 transition-all duration-300",
         isOpen ? "w-64" : isMobile ? "w-0" : "w-20",
@@ -106,9 +108,9 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
             {isOpen && <span className="font-bold text-lg text-realestate-900">RentRight</span>}
           </Link>
           {!isMobile && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="hidden md:flex"
               onClick={toggleSidebar}
             >
@@ -116,7 +118,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
             </Button>
           )}
         </div>
-        
+
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-2">
             {sidebarItems.map((item) => (
@@ -136,7 +138,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
             ))}
           </ul>
         </nav>
-        
+
         <div className="p-4 border-t border-gray-200">
           <div className={cn(
             "flex items-center",
