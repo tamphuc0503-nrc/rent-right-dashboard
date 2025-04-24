@@ -16,6 +16,14 @@ import { ServicesSection } from "./order-form/ServicesSection";
 import { AgentsSection } from "./order-form/AgentsSection";
 import { FeesSection } from "./order-form/FeesSection";
 
+// Define the Activity type that was missing
+interface Activity {
+  id: string;
+  date: string;
+  type: string;
+  description: string;
+}
+
 type OrderDetailsModalProps = {
   isOpen: boolean;
   onClose: () => void;
