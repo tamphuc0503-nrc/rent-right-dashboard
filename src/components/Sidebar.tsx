@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -12,7 +11,8 @@ import {
   Menu,
   X,
   ClipboardList,
-  Plus
+  Plus,
+  Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,7 @@ type SidebarItem = {
   title: string;
   icon: React.ElementType;
   path: string;
+  subItems?: { title: string; path: string }[];
 };
 
 const sidebarItems: SidebarItem[] = [
@@ -35,42 +36,32 @@ const sidebarItems: SidebarItem[] = [
     path: '/orders',
   },
   {
-    title: 'Properties',
-    icon: Building,
-    path: '/properties',
+    title: 'Calendar',
+    icon: Calendar,
+    path: '/calendar',
+    subItems: [
+      { title: 'Next Week', path: '/calendar/upcoming/1week' },
+      { title: '2 Weeks', path: '/calendar/upcoming/2weeks' },
+      { title: '3 Weeks', path: '/calendar/upcoming/3weeks' },
+      { title: '4 Weeks', path: '/calendar/upcoming/4weeks' },
+      { title: 'Scheduling Calendar', path: '/calendar/scheduling' },
+    ],
   },
-  // {
-  //   title: 'Tenants',
-  //   icon: Users,
-  //   path: '/tenants',
-  // },
   {
     title: 'Inspectors',
     icon: UserCircle,
     path: '/inspectors',
   },
-
   {
     title: 'Companies',
     icon: Building,
     path: '/companies',
   },
-  // {
-  //   title: 'Landlords',
-  //   icon: Users,
-  //   path: '/landlords',
-  // },
-
   {
     title: 'Settings',
     icon: Settings,
     path: '/settings',
   },
-  // {
-  //   title: 'Subscriptions',
-  //   icon: CreditCard,
-  //   path: '/subscriptions',
-  // },
 ];
 
 type SidebarProps = {
@@ -79,6 +70,7 @@ type SidebarProps = {
 
 const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(!isMobile);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -132,17 +124,43 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
           <ul className="space-y-1 px-2">
             {sidebarItems.map((item) => (
               <li key={item.title}>
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center px-2 py-3 rounded-md hover:bg-gray-100 transition-colors",
-                    location.pathname === item.path ? "bg-realestate-50 text-realestate-700" : "text-gray-700",
-                    !isOpen && "justify-center"
+                <div className="relative">
+                  <Link
+                    to={item.path}
+                    onClick={(e) => {
+                      if (item.subItems) {
+                        e.preventDefault();
+                        setExpandedItem(expandedItem === item.title ? null : item.title);
+                      }
+                    }}
+                    className={cn(
+                      "flex items-center px-2 py-3 rounded-md hover:bg-gray-100 transition-colors",
+                      location.pathname === item.path ? "bg-realestate-50 text-realestate-700" : "text-gray-700",
+                      !isOpen && "justify-center"
+                    )}
+                  >
+                    <item.icon className={cn("h-5 w-5", location.pathname === item.path ? "text-realestate-700" : "text-gray-500")} />
+                    {isOpen && <span className="ml-3 font-medium">{item.title}</span>}
+                  </Link>
+                  
+                  {isOpen && item.subItems && expandedItem === item.title && (
+                    <ul className="ml-6 mt-1 space-y-1">
+                      {item.subItems.map((subItem) => (
+                        <li key={subItem.title}>
+                          <Link
+                            to={subItem.path}
+                            className={cn(
+                              "block px-2 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors",
+                              location.pathname === subItem.path ? "bg-realestate-50 text-realestate-700" : "text-gray-600"
+                            )}
+                          >
+                            {subItem.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   )}
-                >
-                  <item.icon className={cn("h-5 w-5", location.pathname === item.path ? "text-realestate-700" : "text-gray-500")} />
-                  {isOpen && <span className="ml-3 font-medium">{item.title}</span>}
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
