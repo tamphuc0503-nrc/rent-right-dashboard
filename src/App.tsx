@@ -15,6 +15,7 @@ import Orders from "./pages/Orders";
 import Inspectors from "./pages/Inspectors";
 import Companies from "./pages/Companies";
 import SchedulingCalendar from "./pages/SchedulingCalendar";
+import OrderMapView from "./pages/OrderMapView";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/subscriptions" element={<NotFound />} />
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
             <Route path="/calendar/upcoming/orders" element={<SchedulingCalendar />} />
+            <Route path="/calendar/map" element={<OrderMapView />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

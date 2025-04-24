@@ -48,8 +48,9 @@ const sidebarItems: SidebarItem[] = [
     icon: Calendar,
     path: '/calendar',
     subItems: [
-      { title: 'Scheduling Calendar', path: '/calendar/scheduling' },
+      { title: 'Scheduler', path: '/calendar/scheduling' },
       { title: 'My Upcoming Orders', path: '/calendar/upcoming/orders' },
+      { title: 'Map of Upcoming Orders', path: '/calendar/map' },
     ],
   },
   {
