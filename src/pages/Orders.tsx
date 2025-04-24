@@ -61,6 +61,10 @@ type InspectionOrder = {
   inspectionDate: string;
   status: "pending" | "cancelled" | "scheduled" | "in progress" | "inspected" | "reported" | "completed";
   cost: number;
+  clientName?: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  clientTags?: string[];
   activities?: Activity[];
 };
 
@@ -115,6 +119,10 @@ const Orders = () => {
     setModalMode('view');
     setSelectedOrder({
       ...order,
+      clientName: "John Doe",
+      clientEmail: "john@example.com",
+      clientPhone: "(555) 123-4567",
+      clientTags: ["walk-ins", "call-first"],
       activities: [
         {
           id: '1',
