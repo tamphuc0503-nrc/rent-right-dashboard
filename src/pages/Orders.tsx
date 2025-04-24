@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -16,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import OrderActions from "@/components/OrderActions";
 import { useToast } from "@/hooks/use-toast";
+import OrderDetailsModal from '@/components/OrderDetailsModal';
 
 const generateSampleOrders = (count: number) => {
   const statuses = [
@@ -28,12 +28,11 @@ const generateSampleOrders = (count: number) => {
     "cancelled",
   ] as const;
 
-  // For more realistic dates and status order cycling
   const today = new Date();
 
   return Array.from({ length: count }, (_, idx) => {
     const status = statuses[idx % statuses.length];
-    const day = (idx % 28) + 1; // spread out dates
+    const day = (idx % 28) + 1;
     const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + day);
     return {
       id: (idx + 1).toString(),
@@ -75,7 +74,10 @@ const Orders = () => {
   const [orders, setOrders] = useState<InspectionOrder[]>(generateSampleOrders(100));
   const { toast } = useToast();
 
-  // Pagination state
+  const [selectedOrder, setSelectedOrder] = useState<InspectionOrder | null>(null);
+  const [modalMode, setModalMode] = useState<'view' | 'edit' | 'add'>('view');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(
     orders.filter(order => {
@@ -96,7 +98,37 @@ const Orders = () => {
   };
 
   const handleAddClick = () => {
-    alert("Add inspection order clicked!");
+    setModalMode('add');
+    setSelectedOrder(null);
+    setIsModalOpen(true);
+  };
+
+  const handleView = (order: InspectionOrder) => {
+    setModalMode('view');
+    setSelectedOrder({
+      ...order,
+      activities: [
+        {
+          id: '1',
+          date: new Date().toLocaleDateString(),
+          type: 'Status Change',
+          description: `Status changed to ${order.status}`,
+        },
+        {
+          id: '2',
+          date: new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString(),
+          type: 'Order Created',
+          description: 'Inspection order was created',
+        },
+      ],
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (order: InspectionOrder) => {
+    setModalMode('edit');
+    setSelectedOrder(order);
+    setIsModalOpen(true);
   };
 
   const handleChangeStatus = (orderId: string, newStatus: InspectionOrder["status"]) => {
@@ -114,7 +146,6 @@ const Orders = () => {
     });
   };
 
-  // Search and Pagination
   const filteredOrders = orders.filter(order => {
     const q = search.toLowerCase();
     return (
@@ -126,12 +157,10 @@ const Orders = () => {
     );
   });
 
-  // Orders for current page
   const startIdx = (page - 1) * ORDERS_PER_PAGE;
   const endIdx = startIdx + ORDERS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(startIdx, endIdx);
 
-  // If current page is now out of range, go back to last available page
   if (page > totalPages && totalPages > 0) setPage(totalPages);
 
   return (
@@ -200,8 +229,8 @@ const Orders = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <OrderActions
-                          onView={() => alert(`View order #${order.orderNumber}`)}
-                          onEdit={() => alert(`Edit order #${order.orderNumber}`)}
+                          onView={() => handleView(order)}
+                          onEdit={() => handleEdit(order)}
                           onSchedule={() => alert(`Schedule order #${order.orderNumber}`)}
                           onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
                           onChangeStatus={(s) => handleChangeStatus(order.id, s)}
@@ -214,7 +243,6 @@ const Orders = () => {
               </Table>
             )}
           </div>
-          {/* Pagination controls */}
           <div className="flex justify-between items-center mt-6">
             <Button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -238,6 +266,12 @@ const Orders = () => {
           </div>
         </main>
       </div>
+      <OrderDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        mode={modalMode}
+        order={selectedOrder || undefined}
+      />
     </div>
   );
 };
