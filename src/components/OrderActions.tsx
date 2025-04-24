@@ -1,4 +1,3 @@
-
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -10,7 +9,7 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Calendar, Trash2, Check, Clock, Loader } from "lucide-react";
+import { Eye, Pencil, Calendar, Trash2, Check, Clock, Loader, Mail, Send, FileText, Tag, Printer } from "lucide-react";
 
 type StatusType =
   | "pending"
@@ -71,7 +70,7 @@ const OrderActions = ({
           <Eye className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="z-50 w-52">
+      <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem onClick={onView}>
           <Eye className="mr-2 w-4 h-4" />
           View
@@ -84,7 +83,47 @@ const OrderActions = ({
           <Calendar className="mr-2 w-4 h-4" />
           Schedule
         </DropdownMenuItem>
-        {/* Show "Change Status" sub-menu only if there are allowed transitions */}
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem>
+          <Mail className="mr-2 w-4 h-4" />
+          Send Email Reminder
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Send className="mr-2 w-4 h-4" />
+          Send SMS Reminder
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <FileText className="mr-2 w-4 h-4" />
+          Sign Agreement
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <FileText className="mr-2 w-4 h-4" />
+          Send Invoice
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem>
+          <Tag className="mr-2 w-4 h-4" />
+          Apply Coupon
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem>
+          <FileText className="mr-2 w-4 h-4" />
+          Add Note
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem>
+          <Printer className="mr-2 w-4 h-4" />
+          Print Order
+        </DropdownMenuItem>
+
         {transitions && transitions.length > 0 && (
           <>
             <DropdownMenuSeparator />

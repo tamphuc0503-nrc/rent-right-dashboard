@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   BarChart3,
@@ -14,7 +15,12 @@ import {
   Plus,
   Calendar,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Mail,
+  Send,
+  FileText,
+  Tag,
+  Printer
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -146,16 +152,18 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                       <>
                         <span className="ml-3 font-medium flex-1">{item.title}</span>
                         {item.subItems && (
-                          expandedItem === item.title ? 
-                            <ChevronDown className="h-4 w-4" /> : 
-                            <ChevronRight className="h-4 w-4" />
+                          <div className="transition-transform duration-200 ease-in-out">
+                            {expandedItem === item.title ? 
+                              <ChevronDown className="h-4 w-4 transform rotate-0" /> : 
+                              <ChevronRight className="h-4 w-4" />}
+                          </div>
                         )}
                       </>
                     )}
                   </Link>
                   
                   {isOpen && item.subItems && expandedItem === item.title && (
-                    <ul className="ml-6 mt-1 space-y-1">
+                    <ul className="ml-6 mt-1 space-y-1 animate-accordion-down">
                       {item.subItems.map((subItem) => (
                         <li key={subItem.title}>
                           <Link
