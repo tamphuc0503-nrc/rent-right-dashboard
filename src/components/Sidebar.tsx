@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   BarChart3,
@@ -85,7 +86,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
     document.documentElement.style.setProperty('--sidebar-width', isOpen ? '80px' : '256px');
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', isOpen ? '256px' : '80px');
     return () => {
       document.documentElement.style.removeProperty('--sidebar-width');

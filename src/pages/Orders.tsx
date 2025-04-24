@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -93,7 +94,7 @@ const Orders = () => {
   const [search, setSearch] = useState("");
   const [orders, setOrders] = useState<InspectionOrder[]>(generateSampleOrders(100));
   const { toast } = useToast();
-
+  const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<InspectionOrder | null>(null);
   const [modalMode, setModalMode] = useState<'view' | 'edit' | 'add'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -177,6 +178,7 @@ const Orders = () => {
     return matchesSearch && (statusFilter === 'all' || order.status === statusFilter);
   });
 
+  const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
   const startIdx = (page - 1) * ORDERS_PER_PAGE;
   const endIdx = startIdx + ORDERS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(startIdx, endIdx);
