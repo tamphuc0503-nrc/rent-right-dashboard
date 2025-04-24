@@ -2,7 +2,8 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Search } from "lucide-react";
 
 const PROPERTY_TYPES = [
   "Single Family",
@@ -18,9 +19,36 @@ const FOUNDATION_TYPES = [
   "Pier-and-beam"
 ];
 
+const PROPERTY_TAGS = [
+  { id: 'clientAttending', label: 'Client Attending' },
+  { id: 'occupied', label: 'Occupied' },
+  { id: 'utilities', label: 'Utilities On' },
+  { id: 'alarm', label: 'Has Alarm' },
+];
+
 export function PropertySection({ form }: { form: any }) {
   return (
     <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name="propertyAddress"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Property Address</FormLabel>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <FormControl>
+                <Input 
+                  placeholder="Enter property address" 
+                  className="pl-10"
+                  {...field} 
+                />
+              </FormControl>
+            </div>
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="propertyType"
@@ -42,6 +70,7 @@ export function PropertySection({ form }: { form: any }) {
           </FormItem>
         )}
       />
+
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
@@ -68,6 +97,7 @@ export function PropertySection({ form }: { form: any }) {
           )}
         />
       </div>
+
       <FormField
         control={form.control}
         name="foundationType"
@@ -89,6 +119,7 @@ export function PropertySection({ form }: { form: any }) {
           </FormItem>
         )}
       />
+
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
@@ -115,6 +146,7 @@ export function PropertySection({ form }: { form: any }) {
           )}
         />
       </div>
+
       <FormField
         control={form.control}
         name="mlsNumber"
@@ -127,69 +159,26 @@ export function PropertySection({ form }: { form: any }) {
           </FormItem>
         )}
       />
+
       <div className="space-y-2">
         <FormLabel>Property Tags</FormLabel>
-        <div className="flex flex-wrap gap-4">
-          <FormField
-            control={form.control}
-            name="isClientAttending"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="font-normal">Client Attending</FormLabel>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="isOccupied"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="font-normal">Occupied</FormLabel>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="hasUtilities"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="font-normal">Utilities On</FormLabel>
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="hasAlarm"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2">
-                <FormControl>
-                  <Checkbox 
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel className="font-normal">Has Alarm</FormLabel>
-              </FormItem>
-            )}
-          />
+        <div className="flex flex-wrap gap-2">
+          {PROPERTY_TAGS.map(tag => (
+            <FormField
+              key={tag.id}
+              control={form.control}
+              name={`tags.${tag.id}`}
+              render={({ field }) => (
+                <Badge
+                  variant={field.value ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => field.onChange(!field.value)}
+                >
+                  {tag.label}
+                </Badge>
+              )}
+            />
+          ))}
         </div>
       </div>
     </div>

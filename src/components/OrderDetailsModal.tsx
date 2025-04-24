@@ -88,7 +88,7 @@ export default function OrderDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-auto">
+      <DialogContent className="sm:max-w-[600px] h-[70vh] max-h-[70vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {mode === 'add' ? 'New Inspection Order' : mode === 'edit' ? 'Edit Inspection Order' : 'View Inspection Order'}
@@ -96,8 +96,8 @@ export default function OrderDetailsModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-6">
-            <Tabs defaultValue="general" className="w-full">
+          <form className="flex-1 overflow-hidden">
+            <Tabs defaultValue="general" className="h-full flex flex-col">
               <TabsList className="grid grid-cols-5 w-full">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="property">Property</TabsTrigger>
@@ -105,27 +105,29 @@ export default function OrderDetailsModal({
                 <TabsTrigger value="agents">Agents</TabsTrigger>
                 <TabsTrigger value="fees">Fees</TabsTrigger>
               </TabsList>
-              <TabsContent value="general">
-                <GeneralSection form={form} />
-              </TabsContent>
-              <TabsContent value="property">
-                <PropertySection form={form} />
-              </TabsContent>
-              <TabsContent value="services">
-                <ServicesSection form={form} />
-              </TabsContent>
-              <TabsContent value="agents">
-                <AgentsSection form={form} />
-              </TabsContent>
-              <TabsContent value="fees">
-                <FeesSection form={form} />
-              </TabsContent>
+              <div className="flex-1 overflow-auto px-1">
+                <TabsContent value="general">
+                  <GeneralSection form={form} />
+                </TabsContent>
+                <TabsContent value="property">
+                  <PropertySection form={form} />
+                </TabsContent>
+                <TabsContent value="services">
+                  <ServicesSection form={form} />
+                </TabsContent>
+                <TabsContent value="agents">
+                  <AgentsSection form={form} />
+                </TabsContent>
+                <TabsContent value="fees">
+                  <FeesSection form={form} />
+                </TabsContent>
+              </div>
             </Tabs>
           </form>
         </Form>
 
         {mode !== 'view' && (
-          <DialogFooter>
+          <DialogFooter className="border-t pt-4">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
