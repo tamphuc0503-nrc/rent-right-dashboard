@@ -4,7 +4,14 @@ import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, LayoutGrid, LayoutList, Filter } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -16,6 +23,7 @@ import {
 import OrderActions from "@/components/OrderActions";
 import { useToast } from "@/hooks/use-toast";
 import OrderDetailsModal from '@/components/OrderDetailsModal';
+import ScheduleOrderModal from '@/components/ScheduleOrderModal';
 
 const generateSampleOrders = (count: number) => {
   const statuses = [
@@ -89,20 +97,10 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<InspectionOrder | null>(null);
   const [modalMode, setModalMode] = useState<'view' | 'edit' | 'add'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(
-    orders.filter(order => {
-      const q = search.toLowerCase();
-      return (
-        order.orderNumber.toLowerCase().includes(q) ||
-        order.propertyAddress.toLowerCase().includes(q) ||
-        order.inspectorName.toLowerCase().includes(q) ||
-        order.inspectionDate.toLowerCase().includes(q) ||
-        order.status.toLowerCase().includes(q)
-      );
-    }).length / ORDERS_PER_PAGE
-  );
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [selectedOrderForSchedule, setSelectedOrderForSchedule] = useState<InspectionOrder | null>(null);
+  const [layout, setLayout] = useState<'grid' | 'list'>('list');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -162,15 +160,21 @@ const Orders = () => {
     });
   };
 
+  const handleSchedule = (order: InspectionOrder) => {
+    setSelectedOrderForSchedule(order);
+    setIsScheduleModalOpen(true);
+  };
+
   const filteredOrders = orders.filter(order => {
     const q = search.toLowerCase();
-    return (
+    const matchesSearch = (
       order.orderNumber.toLowerCase().includes(q) ||
       order.propertyAddress.toLowerCase().includes(q) ||
       order.inspectorName.toLowerCase().includes(q) ||
       order.inspectionDate.toLowerCase().includes(q) ||
       order.status.toLowerCase().includes(q)
     );
+    return matchesSearch && (statusFilter === 'all' || order.status === statusFilter);
   });
 
   const startIdx = (page - 1) * ORDERS_PER_PAGE;
@@ -182,7 +186,7 @@ const Orders = () => {
   return (
     <div className="min-h-screen flex bg-gray-50">
       <Sidebar isMobile={isMobile} />
-      <div className={`flex-1 ${isMobile ? '' : 'ml-64'}`}>
+      <div className={`flex-1 ${isMobile ? '' : 'ml-[var(--sidebar-width,256px)]'} transition-all duration-300`}>
         <DashboardHeader />
         <main className="p-6">
           <div className="mb-8">
@@ -192,7 +196,7 @@ const Orders = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-            <div className="w-full sm:w-auto flex-1">
+            <div className="w-full sm:w-auto flex-1 flex gap-2">
               <Input
                 type="search"
                 value={search}
@@ -200,22 +204,52 @@ const Orders = () => {
                 placeholder="Search inspection orders…"
                 className="w-full max-w-md"
               />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="in progress">In Progress</SelectItem>
+                  <SelectItem value="inspected">Inspected</SelectItem>
+                  <SelectItem value="reported">Reported</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Button
-              onClick={handleAddClick}
-              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200"
-              size="lg"
-            >
-              <Plus className="w-5 h-5" />
-              Add inspection order
-            </Button>
+            <div className="flex items-center gap-2">
+              <div className="border rounded-md p-1">
+                <Button
+                  variant={layout === 'list' ? 'default' : 'ghost'}
+                  size="icon"
+                  onClick={() => setLayout('list')}
+                >
+                  <LayoutList className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={layout === 'grid' ? 'default' : 'ghost'}
+                  size="icon"
+                  onClick={() => setLayout('grid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+              </div>
+              <Button
+                onClick={handleAddClick}
+                className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200"
+                size="lg"
+              >
+                <Plus className="w-5 h-5" />
+                Add inspection order
+              </Button>
+            </div>
           </div>
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {paginatedOrders.length === 0 ? (
-              <div className="p-6 flex items-center justify-center text-gray-500">
-                <span>No inspection orders found.</span>
-              </div>
-            ) : (
+            {layout === 'list' ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -247,7 +281,7 @@ const Orders = () => {
                         <OrderActions
                           onView={() => handleView(order)}
                           onEdit={() => handleEdit(order)}
-                          onSchedule={() => alert(`Schedule order #${order.orderNumber}`)}
+                          onSchedule={() => handleSchedule(order)}
                           onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
                           onChangeStatus={(s) => handleChangeStatus(order.id, s)}
                           currentStatus={order.status}
@@ -257,6 +291,33 @@ const Orders = () => {
                   ))}
                 </TableBody>
               </Table>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                {paginatedOrders.map(order => (
+                  <div key={order.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-medium">{order.orderNumber}</h3>
+                      <OrderActions
+                        onView={() => handleView(order)}
+                        onEdit={() => handleEdit(order)}
+                        onSchedule={() => handleSchedule(order)}
+                        onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                        onChangeStatus={(s) => handleChangeStatus(order.id, s)}
+                        currentStatus={order.status}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{order.propertyAddress}</p>
+                    <div className="flex justify-between items-center">
+                      <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
+                        {order.status.replace(/^\w/, c => c.toUpperCase())}
+                      </span>
+                      <span className="text-sm font-medium">
+                        ${order.cost.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
           <div className="flex justify-between items-center mt-6">
@@ -287,6 +348,11 @@ const Orders = () => {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         order={selectedOrder || undefined}
+      />
+      <ScheduleOrderModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        order={selectedOrderForSchedule || undefined}
       />
     </div>
   );

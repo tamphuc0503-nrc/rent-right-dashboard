@@ -82,7 +82,15 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+    document.documentElement.style.setProperty('--sidebar-width', isOpen ? '80px' : '256px');
   };
+
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-width', isOpen ? '256px' : '80px');
+    return () => {
+      document.documentElement.style.removeProperty('--sidebar-width');
+    };
+  }, []);
 
   return (
     <>

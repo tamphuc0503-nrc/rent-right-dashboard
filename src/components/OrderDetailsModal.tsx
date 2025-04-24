@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Dialog,
@@ -73,7 +72,7 @@ const ORDER_STATUSES = [
   "inspected",
   "reported",
   "completed",
-  "cancelled",
+  "cancelled"
 ] as const;
 
 const OrderDetailsModal = ({
@@ -99,7 +98,7 @@ const OrderDetailsModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === 'add' ? 'New Inspection Order' : mode === 'edit' ? 'Edit Inspection Order' : 'View Inspection Order'}
