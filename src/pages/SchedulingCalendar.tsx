@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { format, addWeeks, startOfWeek, endOfWeek, addDays } from 'date-fns';
 import { Calendar as CalendarIcon, LayoutGrid, Clock, List } from 'lucide-react';

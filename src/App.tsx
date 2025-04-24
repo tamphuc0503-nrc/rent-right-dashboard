@@ -1,3 +1,4 @@
+
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -16,6 +17,7 @@ import Inspectors from "./pages/Inspectors";
 import Companies from "./pages/Companies";
 import SchedulingCalendar from "./pages/SchedulingCalendar";
 import OrderMapView from "./pages/OrderMapView";
+import MyUpcomingOrders from "./pages/MyUpcomingOrders";
 
 const queryClient = new QueryClient();
 
