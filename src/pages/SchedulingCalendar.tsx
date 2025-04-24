@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { format, addWeeks, startOfWeek, endOfWeek } from 'date-fns';
+import { format, addWeeks, startOfWeek, endOfWeek, addDays } from 'date-fns';
 import { Calendar as CalendarIcon, LayoutGrid, Clock, List } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
@@ -9,6 +9,92 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+const dummyInspectors = [
+  { id: 1, name: 'John Smith', color: 'bg-blue-500' },
+  { id: 2, name: 'Sarah Johnson', color: 'bg-green-500' },
+  { id: 3, name: 'Mike Brown', color: 'bg-purple-500' },
+  { id: 4, name: 'Emma Davis', color: 'bg-yellow-500' },
+  { id: 5, name: 'James Wilson', color: 'bg-pink-500' },
+  { id: 6, name: 'Lisa Anderson', color: 'bg-orange-500' },
+];
+
+const generateTimelineEvents = () => {
+  const events = [];
+  const startDate = new Date();
+  
+  for (let i = 0; i < 6; i++) {
+    const inspectorEvents = [];
+    for (let j = 0; j < 3; j++) {
+      const dayOffset = Math.floor(Math.random() * 14);
+      const startHour = 8 + Math.floor(Math.random() * 6);
+      const duration = 2 + Math.floor(Math.random() * 2);
+      
+      inspectorEvents.push({
+        id: `${i}-${j}`,
+        title: `Inspection at ${1000 + j} Oak St`,
+        start: addDays(startDate, dayOffset).setHours(startHour, 0, 0, 0),
+        end: addDays(startDate, dayOffset).setHours(startHour + duration, 0, 0, 0),
+      });
+    }
+    events.push({
+      inspector: dummyInspectors[i],
+      events: inspectorEvents,
+    });
+  }
+  return events;
+};
+
+const TimelineView = () => {
+  const timelineEvents = generateTimelineEvents();
+  const days = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i));
+
+  return (
+    <div className="border rounded-lg p-4 overflow-x-auto">
+      <div className="min-w-[1200px]">
+        <div className="grid grid-cols-[200px_repeat(14,1fr)] gap-1">
+          {/* Header */}
+          <div className="h-12 flex items-center font-semibold">Inspector</div>
+          {days.map((day) => (
+            <div 
+              key={day.toISOString()} 
+              className="h-12 text-center border-l"
+            >
+              <div className="text-sm font-medium">{format(day, 'EEE')}</div>
+              <div className="text-xs">{format(day, 'MMM d')}</div>
+            </div>
+          ))}
+
+          {/* Timeline rows */}
+          {timelineEvents.map(({ inspector, events }) => (
+            <React.Fragment key={inspector.id}>
+              <div className="h-20 flex items-center px-2 font-medium">
+                {inspector.name}
+              </div>
+              {days.map((day) => (
+                <div key={day.toISOString()} className="h-20 border-l relative">
+                  {events
+                    .filter(event => 
+                      format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
+                    )
+                    .map(event => (
+                      <div
+                        key={event.id}
+                        className={`absolute top-2 left-1 right-1 p-1 text-xs text-white rounded ${inspector.color}`}
+                        title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
+                      >
+                        {format(event.start, 'HH:mm')} {event.title}
+                      </div>
+                    ))}
+                </div>
+              ))}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SchedulingCalendar = () => {
   const isMobile = useIsMobile();
@@ -60,7 +146,7 @@ const SchedulingCalendar = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-lg shadow">
             {view === 'month' && (
               <Calendar
                 mode="single"
@@ -71,14 +157,10 @@ const SchedulingCalendar = () => {
             )}
             {view === 'week' && (
               <div className="h-[600px] border rounded-lg p-4">
-                <div className="text-center text-gray-500">Week View Calendar will be implemented here</div>
+                <div className="text-center text-gray-500">Coming soon: Week View Calendar</div>
               </div>
             )}
-            {view === 'timeline' && (
-              <div className="h-[600px] border rounded-lg p-4">
-                <div className="text-center text-gray-500">Timeline View with inspector names will be implemented here</div>
-              </div>
-            )}
+            {view === 'timeline' && <TimelineView />}
           </div>
         </main>
       </div>

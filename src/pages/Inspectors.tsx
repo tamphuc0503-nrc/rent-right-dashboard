@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -17,6 +16,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
+import AddInspectorDialog from '@/components/AddInspectorDialog';
 
 function getDummyInspectors() {
   const companies = ["HomeCheck LLC", "SafeNest", "InspectoPro", "QuickHouse", "PrimeInspections"];
@@ -56,6 +56,7 @@ const Inspectors = () => {
   const [selected, setSelected] = useState<typeof inspectors[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
   
   // Pagination state
@@ -81,12 +82,17 @@ const Inspectors = () => {
     setPage(1);
   };
 
-  const handleAddClick = () => {
+  const handleAddInspector = (data: any) => {
+    console.log('New inspector data:', data);
     toast({
-      title: "Add Inspector",
-      description: "This feature is coming soon!",
-      duration: 3000,
+      title: "Inspector Added",
+      description: "The inspector has been successfully added.",
     });
+    setIsAddDialogOpen(false);
+  };
+
+  const handleAddClick = () => {
+    setIsAddDialogOpen(true);
   };
 
   const openDialog = (inspector: typeof inspectors[0]) => {
@@ -251,6 +257,12 @@ const Inspectors = () => {
           )}
         </DialogContent>
       </Dialog>
+      
+      <AddInspectorDialog
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+        onSubmit={handleAddInspector}
+      />
     </div>
   );
 };
