@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -29,6 +30,12 @@ const STATUS_COLORS: Record<string, string> = {
 
 const INSPECTORS_PER_PAGE = 10;
 
+interface InspectorsResponse {
+  data: {
+    inspectors: Inspector[];
+  };
+}
+
 const Inspectors = () => {
   const isMobile = useIsMobile();
   const [selected, setSelected] = useState<Inspector | null>(null);
@@ -37,10 +44,12 @@ const Inspectors = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
   
-  const { data: inspectors = [], isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<InspectorsResponse>({
     queryKey: ['inspectors'],
-    queryFn: () => apiClient<Inspector[]>('/api/inspectors'),
+    queryFn: () => apiClient('/api/inspectors'),
   });
+  
+  const inspectors = data?.data?.inspectors || [];
   
   // Pagination state
   const [page, setPage] = useState(1);
@@ -139,6 +148,10 @@ const Inspectors = () => {
                   </div>
                 ))}
               </div>
+            ) : error ? (
+              <div className="p-6 flex items-center justify-center text-gray-500">
+                <span>No data to show</span>
+              </div>
             ) : paginatedInspectors.length === 0 ? (
               <div className="p-6 flex items-center justify-center text-gray-500">
                 <span>No inspectors found.</span>
@@ -226,3 +239,4 @@ const Inspectors = () => {
 };
 
 export default Inspectors;
+
