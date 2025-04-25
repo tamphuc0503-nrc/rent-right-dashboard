@@ -1,16 +1,10 @@
 
 import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { format } from 'date-fns';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
-import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, LayoutGrid, Clock, List } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import TimelineView from '@/components/scheduling/TimelineView';
-import WeekViewCalendar from '@/components/scheduling/WeekViewCalendar';
+import CalendarToolbar from '@/components/scheduling/CalendarToolbar';
+import CalendarViews from '@/components/scheduling/CalendarViews';
 
 const SchedulingCalendar = () => {
   const isMobile = useIsMobile();
@@ -23,55 +17,17 @@ const SchedulingCalendar = () => {
       <div className={`flex-1 ${isMobile ? '' : 'ml-[var(--sidebar-width,256px)]'} transition-all duration-300`}>
         <DashboardHeader />
         <main className="p-6">
-          <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Scheduler</h1>
-            <div className="flex items-center gap-4">
-              <Tabs defaultValue="month" className="w-[400px]">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="month" onClick={() => setView('month')}>
-                    <LayoutGrid className="h-4 w-4 mr-2" />
-                    Month
-                  </TabsTrigger>
-                  <TabsTrigger value="week" onClick={() => setView('week')}>
-                    <Clock className="h-4 w-4 mr-2" />
-                    Week
-                  </TabsTrigger>
-                  <TabsTrigger value="timeline" onClick={() => setView('timeline')}>
-                    <List className="h-4 w-4 mr-2" />
-                    Timeline
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="gap-2">
-                    <CalendarIcon className="h-4 w-4" />
-                    {selectedDate ? format(selectedDate, 'PPP') : 'Pick a date'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow">
-            {view === 'month' && (
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-md border"
-              />
-            )}
-            {view === 'week' && <WeekViewCalendar />}
-            {view === 'timeline' && <TimelineView />}
-          </div>
+          <CalendarToolbar
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            view={view}
+            setView={setView}
+          />
+          <CalendarViews
+            view={view}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </main>
       </div>
     </div>
