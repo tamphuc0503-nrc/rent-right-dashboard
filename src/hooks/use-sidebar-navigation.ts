@@ -16,12 +16,12 @@ export function useSidebarNavigation(isMobile: boolean) {
 
   const handleParentItemClick = (item: SidebarItem) => {
     if (item.subItems && item.subItems.length > 0) {
+      // Only toggle expansion for parent items with sub-items
       setExpandedItem(expandedItem === item.title ? null : item.title);
-      // Don't navigate when clicking on items with submenus
-      return;
+    } else {
+      // Navigate only for items without sub-items
+      navigate(item.path);
     }
-    // Only navigate if it's a leaf item
-    navigate(item.path);
   };
 
   useEffect(() => {
