@@ -1,7 +1,8 @@
 
-import { Bell, User, Search } from 'lucide-react';
+import { Bell, MessagesSquare, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Link } from 'react-router-dom';
 
@@ -26,9 +27,23 @@ const DashboardHeader = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="text-gray-600">
-              <Bell className="h-5 w-5" />
-            </Button>
+            <div className="relative">
+              <Button variant="ghost" size="icon" className="text-gray-600">
+                <MessagesSquare className="h-5 w-5" />
+                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">
+                  25
+                </Badge>
+              </Button>
+            </div>
+            
+            <div className="relative">
+              <Button variant="ghost" size="icon" className="text-gray-600">
+                <Bell className="h-5 w-5" />
+                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">
+                  10
+                </Badge>
+              </Button>
+            </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

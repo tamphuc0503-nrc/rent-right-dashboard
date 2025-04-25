@@ -58,6 +58,7 @@ const App = () => (
             </Route>
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
             <Route path="/calendar/upcoming/orders" element={<MyUpcomingOrders />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

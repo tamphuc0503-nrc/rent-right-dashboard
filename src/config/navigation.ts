@@ -1,4 +1,3 @@
-
 import {
   BarChart3,
   Users,
@@ -7,6 +6,7 @@ import {
   Settings,
   ClipboardList,
   Calendar,
+  Bell,
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 
@@ -52,5 +52,10 @@ export const sidebarItems: SidebarItem[] = [
       { title: 'DocuSign Keys', path: '/settings/docusign' },
       { title: 'Custom Fields', path: '/settings/custom-fields' },
     ],
+  },
+  {
+    title: 'My Notifications',
+    icon: Bell,
+    path: '/notifications',
   },
 ];
