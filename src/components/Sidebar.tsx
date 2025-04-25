@@ -139,29 +139,23 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                 <div className="relative">
                   <Link
                     to={item.path}
-                    onClick={(e) => {
-                      if (item.subItems) {
-                        e.preventDefault();
-                        setExpandedItem(expandedItem === item.title ? null : item.title);
-                      }
-                    }}
                     className={cn(
-                      "flex items-center px-2 py-3 rounded-md hover:bg-gray-100 transition-colors",
-                      location.pathname === item.path ? "bg-realestate-50 text-realestate-700" : "text-gray-700",
+                      "flex items-center px-2 py-3 rounded-md hover:bg-accent transition-colors",
+                      location.pathname === item.path ? "bg-accent text-accent-foreground" : "text-gray-700",
                       !isOpen && "justify-center"
                     )}
                   >
                     <item.icon className={cn(
                       "h-5 w-5",
-                      location.pathname === item.path ? "text-realestate-700" : "text-gray-500"
+                      location.pathname === item.path ? "text-accent-foreground" : "text-gray-500"
                     )} />
                     {isOpen && (
                       <>
                         <span className="ml-3 font-medium flex-1">{item.title}</span>
                         {item.subItems && (
-                          <div className="transition-transform duration-200 ease-in-out">
+                          <div className="transition-transform duration-200">
                             {expandedItem === item.title ? 
-                              <ChevronDown className="h-4 w-4 transform rotate-0" /> : 
+                              <ChevronDown className="h-4 w-4" /> : 
                               <ChevronRight className="h-4 w-4" />}
                           </div>
                         )}
@@ -170,14 +164,14 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                   </Link>
                   
                   {isOpen && item.subItems && expandedItem === item.title && (
-                    <ul className="ml-6 mt-1 space-y-1 animate-accordion-down">
+                    <ul className="ml-6 mt-1 space-y-1">
                       {item.subItems.map((subItem) => (
                         <li key={subItem.title}>
                           <Link
                             to={subItem.path}
                             className={cn(
-                              "block px-2 py-2 text-sm rounded-md hover:bg-gray-100 transition-colors",
-                              location.pathname === subItem.path ? "bg-realestate-50 text-realestate-700" : "text-gray-600"
+                              "block px-2 py-2 text-sm rounded-md hover:bg-accent transition-colors",
+                              location.pathname === subItem.path ? "bg-accent text-accent-foreground" : "text-gray-600"
                             )}
                           >
                             {subItem.title}
