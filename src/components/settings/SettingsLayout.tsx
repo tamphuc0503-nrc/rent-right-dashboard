@@ -1,5 +1,4 @@
 
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   Accordion,
@@ -49,33 +48,22 @@ export default function SettingsLayout() {
       <h1 className="text-3xl font-bold mb-8">Settings</h1>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-1">
-          <Accordion type="single" collapsible defaultValue="settings">
-            <AccordionItem value="settings">
-              <AccordionTrigger>Settings Menu</AccordionTrigger>
-              <AccordionContent>
-                <nav className="flex flex-col space-y-1">
-                  {settingsMenuItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors ${
-                        location.pathname === item.path
-                          ? "bg-accent text-accent-foreground"
-                          : ""
-                      }`}
-                    >
-                      <span>{item.title}</span>
-                      {location.pathname === item.path ? (
-                        <ChevronRight className="h-4 w-4" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4" />
-                      )}
-                    </Link>
-                  ))}
-                </nav>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          {/* Remove Accordion: always show settings menu */}
+          <nav className="flex flex-col space-y-1">
+            {settingsMenuItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center justify-between p-2 rounded-lg hover:bg-accent transition-colors ${
+                  location.pathname === item.path
+                    ? "bg-accent text-accent-foreground font-semibold"
+                    : ""
+                }`}
+              >
+                <span>{item.title}</span>
+              </Link>
+            ))}
+          </nav>
         </div>
         <div className="md:col-span-3">
           <Outlet />

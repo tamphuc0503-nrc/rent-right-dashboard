@@ -1,6 +1,6 @@
 
 import React from "react";
-import { format, addDays, setHours, startOfWeek } from "date-fns";
+import { format, addDays } from "date-fns";
 
 export type WeekViewOrder = {
   id: string;
@@ -19,28 +19,15 @@ type OrdersWeekViewProps = {
   orders: WeekViewOrder[];
 };
 
-const HOURS = Array.from({ length: 13 }, (_, i) => 8 + i); // 8 to 20 inclusive (8am - 8pm)
+const HOURS = Array.from({ length: 13 }, (_, i) => 8 + i); // 8 to 20 inclusive
 
 function getTimeInMinutes(t: string) {
   const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
 }
 
-// Order bar height and offset utilities for CSS grid
-function calcTopOffset(startTime: string) {
-  const mins = getTimeInMinutes(startTime);
-  return ((mins - 8 * 60) / (12 * 60)) * 100;
-}
-
-function calcOrderHeight(startTime: string, endTime: string) {
-  const diff = getTimeInMinutes(endTime) - getTimeInMinutes(startTime);
-  return (diff / (12 * 60)) * 100; // grid cell height in percent of full day
-}
-
 export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProps) {
   const days = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
-
-  // Group orders by date (yyyy-MM-dd)
   const ordersByDate: Record<string, WeekViewOrder[]> = {};
   orders.forEach(order => {
     (ordersByDate[order.date] = ordersByDate[order.date] || []).push(order);
@@ -51,11 +38,11 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
       <div className="flex">
         {/* Dates column */}
         <div className="flex flex-col w-[120px] border-r mr-1 shrink-0">
-          <div className="h-10" /> {/* header space */}
+          <div className="h-10" />
           {days.map((d) => (
             <div
               key={d.toISOString()}
-              className="h-32 md:h-40 lg:h-48 flex flex-col justify-center border-b last:border-b-0"
+              className="min-h-[7.5rem] h-[7.5rem] md:min-h-[10rem] md:h-[10rem] lg:min-h-[12rem] lg:h-[12rem] flex flex-col justify-center border-b last:border-b-0"
             >
               <div className="font-semibold text-gray-800">{format(d, "EEE")}</div>
               <div className="text-xs text-gray-500">{format(d, "MMM d")}</div>
@@ -82,10 +69,10 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
               return (
                 <div
                   key={dayStr}
-                  className="relative h-32 md:h-40 lg:h-48 border-b flex"
+                  className="relative min-h-[7.5rem] h-[7.5rem] md:min-h-[10rem] md:h-[10rem] lg:min-h-[12rem] lg:h-[12rem] border-b flex"
                   style={{ minHeight: 90 }} // fallback
                 >
-                  {/* Vertical hour cell backgrounds (grid lines) */}
+                  {/* Vertical hour cell backgrounds */}
                   {HOURS.map((_, idx) => (
                     <div
                       key={idx}
@@ -100,10 +87,8 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
                   ))}
                   {/* Orders as bars */}
                   {dayOrders.map((order, idx) => {
-                    // Compute absolute positioning within the grid
-                    const start = getTimeInMinutes(order.startTime); // e.g., 9:30 -> 570
+                    const start = getTimeInMinutes(order.startTime);
                     const end = getTimeInMinutes(order.endTime);
-                    const colStart = Math.floor((start - 480) / 60); // 480 = 8*60
                     const leftPercent = ((start - 480) / (12 * 60)) * 100;
                     const widthPercent = Math.max(
                       ((end - start) / (12 * 60)) * 100,
@@ -147,4 +132,3 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
     </div>
   );
 }
-
