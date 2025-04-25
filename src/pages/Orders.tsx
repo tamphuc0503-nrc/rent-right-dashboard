@@ -107,6 +107,9 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
+  const [selectedOrderForSchedule, setSelectedOrderForSchedule] = useState<InspectionOrder | null>(null);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setOrders(generateSampleOrders(100));
