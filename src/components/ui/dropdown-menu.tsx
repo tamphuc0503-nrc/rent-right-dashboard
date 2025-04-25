@@ -179,6 +179,8 @@ const DropdownMenuShortcut = ({
 }
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
 
+import "@/styles/popup-animation.css";
+
 export {
   DropdownMenu,
   DropdownMenuTrigger,
