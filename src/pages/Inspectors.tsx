@@ -5,28 +5,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Users, Eye } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Plus, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import clsx from "clsx";
 import AddInspectorDialog from '@/components/AddInspectorDialog';
 import { apiClient } from '@/lib/api-client';
 import type { Inspector } from '@/types/inspector';
-
-const STATUS_COLORS: Record<string, string> = {
-  active: "bg-green-100 text-green-600",
-  "de-active": "bg-red-100 text-red-600"
-};
+import { InspectorList } from '@/components/inspectors/InspectorList';
+import { InspectorSearch } from '@/components/inspectors/InspectorSearch';
+import { InspectorLoadingState } from '@/components/inspectors/InspectorLoadingState';
+import { InspectorPagination } from '@/components/inspectors/InspectorPagination';
 
 const INSPECTORS_PER_PAGE = 10;
 
@@ -86,12 +73,8 @@ const Inspectors = () => {
         description: "The inspector has been successfully added.",
       });
       setIsAddDialogOpen(false);
-      refetch(); // Reload the inspectors list
+      refetch();
     }
-  };
-
-  const handleAddClick = () => {
-    setIsAddDialogOpen(true);
   };
 
   const openDialog = (inspector: Inspector) => {
@@ -118,16 +101,10 @@ const Inspectors = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
             <div className="w-full sm:w-auto flex-1">
-              <Input
-                type="search"
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Search inspectors…"
-                className="w-full max-w-md"
-              />
+              <InspectorSearch value={search} onChange={handleSearchChange} />
             </div>
             <Button
-              onClick={handleAddClick}
+              onClick={() => setIsAddDialogOpen(true)}
               className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200"
               size="lg"
             >
@@ -138,16 +115,7 @@ const Inspectors = () => {
           
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
             {isLoading ? (
-              <div className="p-4 space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
-                    <Skeleton className="h-4 w-[150px]" />
-                    <Skeleton className="h-4 w-[100px]" />
-                  </div>
-                ))}
-              </div>
+              <InspectorLoadingState />
             ) : error ? (
               <div className="p-6 flex items-center justify-center text-gray-500">
                 <span>No data to show</span>
@@ -157,86 +125,28 @@ const Inspectors = () => {
                 <span>No inspectors found.</span>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Point</TableHead>
-                    <TableHead>WIP</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedInspectors.map(inspector => (
-                    <TableRow key={inspector.id}>
-                      <TableCell className="font-medium">{inspector.name}</TableCell>
-                      <TableCell>{inspector.email}</TableCell>
-                      <TableCell>{inspector.phone}</TableCell>
-                      <TableCell>
-                        <span className={clsx("px-2 py-1 rounded text-xs font-semibold", STATUS_COLORS[inspector.status])}>
-                          {inspector.status}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="inline-block font-semibold">{inspector.points}</span>
-                        <span className="ml-1 text-yellow-400">★</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className={clsx(
-                          "px-2 py-1 rounded text-xs font-semibold",
-                          inspector.inspectionStatus === "inspecting" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
-                        )}>
-                          {inspector.inspectionStatus}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openDialog(inspector)}
-                          className="flex items-center gap-1"
-                        >
-                          <Eye className="h-4 w-4" />
-                          Review
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <InspectorList 
+                inspectors={paginatedInspectors} 
+                onReviewClick={openDialog}
+              />
             )}
           </div>
           
-          {/* Pagination controls */}
-          <div className="flex justify-between items-center mt-6">
-            <Button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4"
-              variant="outline"
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-gray-700">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || totalPages === 0}
-              className="px-4"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </div>
+          <InspectorPagination 
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </main>
       </div>
+
+      <AddInspectorDialog 
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+        onSubmit={handleAddInspector}
+      />
     </div>
   );
 };
 
 export default Inspectors;
-
