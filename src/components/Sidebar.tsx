@@ -9,6 +9,7 @@ import { sidebarItems } from '@/config/navigation';
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import ClientsPanel from "@/components/clients/ClientsPanel";
 import { SidebarProfile } from "@/components/sidebar/SidebarProfile";
+import { useNavigate } from 'react-router-dom';
 
 type SidebarProps = {
   isMobile?: boolean;
@@ -20,6 +21,8 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const [settingsTab, setSettingsTab] = useState<undefined | string>(undefined);
   const [clientsPanelOpen, setClientsPanelOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSidebarItemClick = (item: any) => {
     if (item.title === "Settings") {
       setSettingsOpen(true);
@@ -29,13 +32,21 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
     }
   };
 
-  const handleSidebarSubMenuClick = (item: any, subItem: { title: string; path: string }) => {
+  const handleSidebarSubMenuClick = (
+    item: any,
+    subItem: { title: string; path: string }
+  ) => {
     if (item.title === "Settings") {
       setSettingsTab(subItem.path);
       setSettingsOpen(true);
+      return;
     }
     if (item.title === "Externals" && subItem.title === "Clients") {
       setClientsPanelOpen(true);
+      return;
+    }
+    if (subItem.path) {
+      navigate(subItem.path);
     }
   };
 
