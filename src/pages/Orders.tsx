@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
@@ -89,10 +88,10 @@ const statusColors: Record<InspectionOrder["status"], string> = {
 
 const ORDERS_PER_PAGE = 10;
 
-const Orders = () => {
+export default function Orders() {
   const isMobile = useIsMobile();
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState<InspectionOrder[]>(generateSampleOrders(100));
+  const [orders, setOrders] = useState<InspectionOrder[]>([]);
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<InspectionOrder | null>(null);
@@ -102,6 +101,16 @@ const Orders = () => {
   const [selectedOrderForSchedule, setSelectedOrderForSchedule] = useState<InspectionOrder | null>(null);
   const [layout, setLayout] = useState<'grid' | 'list'>('list');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOrders(generateSampleOrders(100));
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -265,21 +274,66 @@ const Orders = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedOrders.map(order => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                      <TableCell>{order.propertyAddress}</TableCell>
-                      <TableCell>{order.inspectorName}</TableCell>
-                      <TableCell>{order.inspectionDate}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
-                          {order.status.replace(/^\w/, c => c.toUpperCase())}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
-                      </TableCell>
-                      <TableCell className="text-right">
+                  {isLoading ? (
+                    Array.from({ length: 5 }).map((_, idx) => (
+                      <TableRow key={idx}>
+                        {Array.from({ length: 7 }).map((_, cellIdx) => (
+                          <TableCell key={cellIdx}>
+                            <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    paginatedOrders.map(order => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">{order.orderNumber}</TableCell>
+                        <TableCell>{order.propertyAddress}</TableCell>
+                        <TableCell>{order.inspectorName}</TableCell>
+                        <TableCell>{order.inspectionDate}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
+                            {order.status.replace(/^\w/, c => c.toUpperCase())}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <OrderActions
+                            onView={() => handleView(order)}
+                            onEdit={() => handleEdit(order)}
+                            onSchedule={() => handleSchedule(order)}
+                            onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                            onChangeStatus={(s) => handleChangeStatus(order.id, s)}
+                            currentStatus={order.status}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                {isLoading ? (
+                  Array.from({ length: 6 }).map((_, idx) => (
+                    <div key={idx} className="border rounded-lg p-4">
+                      <div className="space-y-3">
+                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
+                        <div className="flex justify-between items-center pt-2">
+                          <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
+                          <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  paginatedOrders.map(order => (
+                    <div key={order.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-medium">{order.orderNumber}</h3>
                         <OrderActions
                           onView={() => handleView(order)}
                           onEdit={() => handleEdit(order)}
@@ -288,37 +342,19 @@ const Orders = () => {
                           onChangeStatus={(s) => handleChangeStatus(order.id, s)}
                           currentStatus={order.status}
                         />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                {paginatedOrders.map(order => (
-                  <div key={order.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-medium">{order.orderNumber}</h3>
-                      <OrderActions
-                        onView={() => handleView(order)}
-                        onEdit={() => handleEdit(order)}
-                        onSchedule={() => handleSchedule(order)}
-                        onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
-                        onChangeStatus={(s) => handleChangeStatus(order.id, s)}
-                        currentStatus={order.status}
-                      />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{order.propertyAddress}</p>
+                      <div className="flex justify-between items-center">
+                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
+                          {order.status.replace(/^\w/, c => c.toUpperCase())}
+                        </span>
+                        <span className="text-sm font-medium">
+                          ${order.cost.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{order.propertyAddress}</p>
-                    <div className="flex justify-between items-center">
-                      <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
-                        {order.status.replace(/^\w/, c => c.toUpperCase())}
-                      </span>
-                      <span className="text-sm font-medium">
-                        ${order.cost.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -358,6 +394,4 @@ const Orders = () => {
       />
     </div>
   );
-};
-
-export default Orders;
+}

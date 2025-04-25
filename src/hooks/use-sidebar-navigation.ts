@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarItem } from '@/types/sidebar';
+import { sidebarItems } from '@/config/navigation';
 
 export function useSidebarNavigation(isMobile: boolean) {
   const [isOpen, setIsOpen] = useState(!isMobile);
@@ -24,16 +25,6 @@ export function useSidebarNavigation(isMobile: boolean) {
       navigate(item.path);
     }
   };
-
-  useEffect(() => {
-    const currentPath = location.pathname;
-    const parentItem = sidebarItems.find(item => 
-      item.subItems?.some(subItem => subItem.path === currentPath)
-    );
-    if (parentItem) {
-      setExpandedItem(parentItem.title);
-    }
-  }, [location.pathname]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', isOpen ? '256px' : '80px');
