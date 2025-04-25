@@ -24,7 +24,11 @@ import { useToast } from "@/hooks/use-toast";
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import ScheduleOrderModal from '@/components/ScheduleOrderModal';
 import { Button } from "@/components/ui/button";
-import { Bell, Send, FilePlus, Percent } from "lucide-react"; // for quick actions colorized icons
+import { Bell, Send, FilePlus, Percent } from "lucide-react";
+import OrdersTable from "@/components/orders/OrdersTable";
+import OrdersMobileCards from "@/components/orders/OrdersMobileCards";
+import OrdersPagination from "@/components/orders/OrdersPagination";
+import OrdersControlsBar from "@/components/orders/OrdersControlsBar";
 
 const generateSampleOrders = (count: number) => {
   const statuses = [
@@ -205,266 +209,36 @@ export default function Orders() {
             <h1 className="text-2xl font-bold text-gray-900">Inspection Orders</h1>
             <p className="text-gray-600">Manage and track your inspection orders.</p>
           </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-            <div className="w-full sm:w-auto flex-1 flex gap-2">
-              <Input
-                type="search"
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Search inspection orders…"
-                className="w-full max-w-md"
-              />
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="in progress">In Progress</SelectItem>
-                  <SelectItem value="inspected">Inspected</SelectItem>
-                  <SelectItem value="reported">Reported</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="border rounded-md p-1">
-                <Button
-                  variant={layout === 'list' ? 'default' : 'ghost'}
-                  size="icon"
-                  onClick={() => setLayout('list')}
-                >
-                  <LayoutList className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={layout === 'grid' ? 'default' : 'ghost'}
-                  size="icon"
-                  onClick={() => setLayout('grid')}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-              </div>
-              <Button
-                onClick={handleAddClick}
-                className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white font-semibold px-6 py-2 rounded-md flex items-center gap-2 transition-all duration-200"
-                size="lg"
-              >
-                <Plus className="w-5 h-5" />
-                Add inspection order
-              </Button>
-            </div>
-          </div>
+          <OrdersControlsBar
+            search={search}
+            setSearch={setSearch}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            layout={layout}
+            setLayout={setLayout}
+            handleAddClick={handleAddClick}
+          />
 
           {isMobile ? (
-            // Mobile layout
-            <div className="space-y-3">
-              {isLoading
-                ? Array.from({ length: 5 }).map((_, idx) => (
-                    <div className="bg-white rounded-lg p-4 shadow flex flex-col gap-3 animate-pulse" key={idx}>
-                      <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
-                      <div className="h-3 w-2/3 bg-gray-100 rounded"></div>
-                      <div className="flex gap-2">
-                        <div className="h-4 w-10 bg-violet-200 rounded"></div>
-                        <div className="h-4 w-10 bg-orange-200 rounded"></div>
-                      </div>
-                    </div>
-                  ))
-                : paginatedOrders.map(order => (
-                    <div key={order.id} className="bg-white rounded-lg shadow p-4 flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-lg font-bold">{order.orderNumber}</div>
-                          <div className="text-xs text-gray-500">{order.propertyAddress}</div>
-                        </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[order.status]}`}>
-                          {order.status.replace(/^\w/, c => c.toUpperCase())}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-700">Inspector: {order.inspectorName}</div>
-                      <div className="text-xs text-gray-700">Date: {order.inspectionDate}</div>
-                      <div className="flex gap-1 mt-2 flex-wrap">
-                        <Button size="icon" variant="ghost" className="bg-orange-100 hover:bg-orange-200 text-orange-600"
-                          title="Reminder" onClick={() => alert("Send reminder")}>
-                          <Bell className="h-4 w-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                          title="Send Invoice" onClick={() => alert("Send invoice")}>
-                          <Send className="h-4 w-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="bg-green-100 hover:bg-green-200 text-green-700"
-                          title="Add Note" onClick={() => alert("Add note")}>
-                          <FilePlus className="h-4 w-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="bg-pink-100 hover:bg-pink-200 text-pink-700"
-                          title="Apply Coupon" onClick={() => alert("Apply coupon")}>
-                          <Percent className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" className="bg-purple-700 text-white hover:bg-purple-800 ml-auto"
-                          onClick={() => handleView(order)}>
-                          View
-                        </Button>
-                      </div>
-                    </div>
-                ))
-              }
-            </div>
+            <OrdersMobileCards
+              paginatedOrders={paginatedOrders}
+              isLoading={isLoading}
+              statusColors={statusColors}
+              handleView={handleView}
+            />
           ) : (
-            // Desktop layout
-            <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px] overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order #</TableHead>
-                    <TableHead>Property Address</TableHead>
-                    <TableHead>Inspector</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    {/* Move Quick Actions column before Actions */}
-                    <TableHead className="text-right">Quick Actions</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    Array.from({ length: 5 }).map((_, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
-                            <div className="h-6 w-6 rounded bg-orange-200 animate-pulse"></div>
-                            <div className="h-6 w-6 rounded bg-blue-200 animate-pulse"></div>
-                            <div className="h-6 w-6 rounded bg-green-200 animate-pulse"></div>
-                            <div className="h-6 w-6 rounded bg-pink-200 animate-pulse"></div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right"><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                        <TableCell className="text-right"><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    paginatedOrders.map(order => {
-                      // Animation state for this row's actions menu
-                      const [showActions, setShowActions] = useState(false);
-
-                      return (
-                        <TableRow key={order.id}
-                          onMouseEnter={() => setShowActions(true)}
-                          onMouseLeave={() => setShowActions(false)}
-                        >
-                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                          <TableCell>{order.propertyAddress}</TableCell>
-                          <TableCell>{order.inspectorName}</TableCell>
-                          <TableCell>{order.inspectionDate}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
-                              {order.status.replace(/^\w/, c => c.toUpperCase())}
-                            </span>
-                          </TableCell>
-                          {/* Quick Actions Cell */}
-                          <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-orange-100 hover:bg-orange-200 text-orange-600"
-                                title="Reminder"
-                                onClick={() => alert("Send reminder")}
-                              >
-                                <Bell className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                                title="Send Invoice"
-                                onClick={() => alert("Send invoice")}
-                              >
-                                <Send className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-green-100 hover:bg-green-200 text-green-700"
-                                title="Add Note"
-                                onClick={() => alert("Add note")}
-                              >
-                                <FilePlus className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-pink-100 hover:bg-pink-200 text-pink-700"
-                                title="Apply Coupon"
-                                onClick={() => alert("Apply coupon")}
-                              >
-                                <Percent className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          {/* Actions Cell */}
-                          <TableCell className="text-right relative">
-                            {/* Animate dropdown container */}
-                            <div
-                              className={`transition-opacity transition-transform duration-1000 ${
-                                showActions ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-                              }`}
-                              style={{
-                                transitionProperty: 'opacity, transform',
-                                transitionDuration: '1s'
-                              }}
-                            >
-                              <OrderActions
-                                onView={() => handleView(order)}
-                                onEdit={() => handleEdit(order)}
-                                onSchedule={() => handleSchedule(order)}
-                                onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
-                                onChangeStatus={(s) => handleChangeStatus(order.id, s)}
-                                currentStatus={order.status}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            <OrdersTable
+              paginatedOrders={paginatedOrders}
+              isLoading={isLoading}
+              statusColors={statusColors}
+              handleView={handleView}
+              handleEdit={handleEdit}
+              handleSchedule={handleSchedule}
+              handleChangeStatus={handleChangeStatus}
+            />
           )}
 
-          <div className="flex justify-between items-center mt-6">
-            <Button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4"
-              variant="outline"
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-gray-700">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || totalPages === 0}
-              className="px-4"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </div>
+          <OrdersPagination page={page} totalPages={totalPages} setPage={setPage} />
         </main>
       </div>
       <OrderDetailsModal
