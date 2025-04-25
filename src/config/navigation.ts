@@ -7,7 +7,8 @@ import {
   Settings,
   ClipboardList,
   Calendar,
-  Clock4
+  Clock4,
+  Mail
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
@@ -57,7 +58,6 @@ export const sidebarItems: SidebarItem[] = [
     title: 'Recents',
     icon: Clock4,
     path: '',
-    // We'll handle open-in-new-tab in SidebarMenuItem
     subItems: getRecentsSubItems(),
   },
   {
@@ -74,6 +74,11 @@ export const sidebarItems: SidebarItem[] = [
       { title: 'My Upcoming Orders', path: '/calendar/upcoming/orders' },
       { title: 'Map of Upcoming Orders', path: '/calendar/map' },
     ],
+  },
+  {
+    title: 'My Messages',
+    icon: Mail,
+    path: '/messages',
   },
   {
     title: 'Inspectors',
@@ -98,3 +103,4 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
+

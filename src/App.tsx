@@ -25,6 +25,7 @@ import DocusignKeys from "./pages/settings/DocusignKeys";
 import CustomFields from "./pages/settings/CustomFields";
 import Templates from "./pages/settings/Templates";
 import OrderDetailPage from "./pages/OrderDetailPage";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/calendar/map" element={<OrderMapView />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
