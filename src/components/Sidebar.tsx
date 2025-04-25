@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
@@ -9,6 +8,7 @@ import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
 import { sidebarItems } from '@/config/navigation';
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import ClientsPanel from "@/components/clients/ClientsPanel";
+import { SidebarProfile } from "@/components/sidebar/SidebarProfile";
 
 type SidebarProps = {
   isMobile?: boolean;
