@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarItem } from '@/types/sidebar';
-import { sidebarItems } from '@/config/navigation';
 
 export function useSidebarNavigation(isMobile: boolean) {
   const [isOpen, setIsOpen] = useState(!isMobile);
@@ -18,12 +17,11 @@ export function useSidebarNavigation(isMobile: boolean) {
   const handleParentItemClick = (item: SidebarItem) => {
     if (item.subItems && item.subItems.length > 0) {
       setExpandedItem(expandedItem === item.title ? null : item.title);
-      if (expandedItem !== item.title) {
-        navigate(item.subItems[0].path);
-      }
-    } else {
-      navigate(item.path);
+      // Don't navigate when clicking on items with submenus
+      return;
     }
+    // Only navigate if it's a leaf item
+    navigate(item.path);
   };
 
   useEffect(() => {
