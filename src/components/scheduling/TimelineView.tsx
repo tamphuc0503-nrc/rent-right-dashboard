@@ -1,37 +1,51 @@
 
-import React, { useState } from 'react';
-import { format, addDays } from 'date-fns';
-import { dummyInspectors, getDragEventData, generateTimelineEvents } from './calendarUtils';
+import React, { useState } from "react";
+import { format, addDays } from "date-fns";
+import { dummyInspectors, generateTimelineEvents } from "./calendarUtils";
+import TimelineEvent from "./TimelineEvent";
+import {
+  setTimelineDragData,
+  getTimelineDragEventData,
+} from "./timelineDnDUtils";
 
 const TimelineView = () => {
   const [timelineEvents, setTimelineEvents] = useState(generateTimelineEvents());
   const days = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i));
 
-  function handleDragStart(e: React.DragEvent, inspectorIdx: number, eventIdx: number) {
-    e.dataTransfer.setData(
-      'application/json',
-      JSON.stringify({
-        fromInspector: inspectorIdx,
-        fromEventIdx: eventIdx,
-        type: 'timeline',
-      })
-    );
-    e.dataTransfer.effectAllowed = 'move';
+  function handleDragStart(
+    e: React.DragEvent,
+    inspectorIdx: number,
+    eventIdx: number
+  ) {
+    setTimelineDragData(e, inspectorIdx, eventIdx);
   }
 
   function handleDrop(e: React.DragEvent, inspectorIdx: number, date: Date) {
-    const data = getDragEventData(e);
-    if (!data || data.type !== 'timeline') return;
-    setTimelineEvents(prev => {
+    const data = getTimelineDragEventData(e);
+    if (!data || data.type !== "timeline") return;
+    setTimelineEvents((prev) => {
       const prevEvents = [...prev];
-      const event = { ...prev[prevEvents[data.fromInspector].inspector.id - 1].events[data.fromEventIdx] };
+      const event = {
+        ...prev[prevEvents[data.fromInspector].inspector.id - 1].events[
+          data.fromEventIdx
+        ],
+      };
       const origStart = new Date(event.start);
       const origEnd = new Date(event.end);
       const newStart = new Date(date);
-      newStart.setHours(origStart.getHours(), origStart.getMinutes(), 0, 0);
+      newStart.setHours(
+        origStart.getHours(),
+        origStart.getMinutes(),
+        0,
+        0
+      );
       const newEnd = new Date(date);
-      newEnd.setHours(origEnd.getHours(), origEnd.getMinutes(), 0, 0);
-
+      newEnd.setHours(
+        origEnd.getHours(),
+        origEnd.getMinutes(),
+        0,
+        0
+      );
       prevEvents[data.fromInspector].events.splice(data.fromEventIdx, 1);
       prevEvents[inspectorIdx].events.push({
         ...event,
@@ -49,8 +63,8 @@ const TimelineView = () => {
           <div className="h-12 flex items-center font-semibold">Inspector</div>
           {days.map((day) => (
             <div key={day.toISOString()} className="h-12 text-center border-l">
-              <div className="text-sm font-medium">{format(day, 'EEE')}</div>
-              <div className="text-xs">{format(day, 'MMM d')}</div>
+              <div className="text-sm font-medium">{format(day, "EEE")}</div>
+              <div className="text-xs">{format(day, "MMM d")}</div>
             </div>
           ))}
           {timelineEvents.map(({ inspector, events }, inspectorIdx) => (
@@ -62,26 +76,32 @@ const TimelineView = () => {
                 <div
                   key={day.toISOString()}
                   className="h-20 border-l relative"
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={e => handleDrop(e, inspectorIdx, day)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, inspectorIdx, day)}
                   style={{ minHeight: 48, minWidth: 48 }}
                 >
                   {events
-                    .filter(event =>
-                      format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
+                    .filter(
+                      (event) =>
+                        format(event.start, "yyyy-MM-dd") ===
+                        format(day, "yyyy-MM-dd")
                     )
-                    .map((event, eventIdx) => (
-                      <div
-                        key={event.id}
-                        className={`absolute top-2 left-1 right-1 p-1 text-xs text-white rounded cursor-grab ${inspector.color}`}
-                        title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
-                        draggable
-                        onDragStart={e => handleDragStart(e, inspectorIdx, events.indexOf(event))}
-                        style={{ zIndex: 2 }}
-                      >
-                        {format(event.start, 'HH:mm')} {event.title}
-                      </div>
-                    ))}
+                    .map((event, eventIdx) => {
+                      const startTime = format(event.start, "HH:mm");
+                      const endTime = format(event.end, "HH:mm");
+                      return (
+                        <TimelineEvent
+                          key={event.id}
+                          event={event}
+                          color={inspector.color}
+                          startTime={startTime}
+                          endTime={endTime}
+                          onDragStart={(e) =>
+                            handleDragStart(e, inspectorIdx, events.indexOf(event))
+                          }
+                        />
+                      );
+                    })}
                 </div>
               ))}
             </React.Fragment>
