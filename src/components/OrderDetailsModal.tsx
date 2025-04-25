@@ -15,6 +15,7 @@ import { ServicesSection } from "./order-form/ServicesSection";
 import { AgentsSection } from "./order-form/AgentsSection";
 import { FeesSection } from "./order-form/FeesSection";
 import { ExternalLink } from "lucide-react";
+import { OrderDetailsContent } from "./order-form/OrderDetailsContent";
 
 interface Activity {
   id: string;
@@ -118,52 +119,9 @@ export default function OrderDetailsModal({
 
         <Form {...form}>
           <form className="flex-1 overflow-hidden">
-            <Tabs defaultValue="general" className="h-full flex flex-col">
-              <TabsList className="grid grid-cols-5 w-full">
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="property">Property</TabsTrigger>
-                <TabsTrigger value="services">Add-ons</TabsTrigger>
-                <TabsTrigger value="agents">Agents</TabsTrigger>
-                <TabsTrigger value="fees">Fees</TabsTrigger>
-              </TabsList>
-              <div className="flex-1 overflow-auto px-1">
-                <TabsContent value="general">
-                  <GeneralSection form={form} />
-                </TabsContent>
-                <TabsContent value="property">
-                  <PropertySection form={form} />
-                </TabsContent>
-                <TabsContent value="services">
-                  <ServicesSection form={form} />
-                </TabsContent>
-                <TabsContent value="agents">
-                  <AgentsSection form={form} />
-                </TabsContent>
-                <TabsContent value="fees">
-                  <FeesSection form={form} />
-                </TabsContent>
-              </div>
-            </Tabs>
+            <OrderDetailsContent order={order || {}} form={form} editable={mode !== 'view'} />
           </form>
         </Form>
-
-        {mode === "view" && order?.activities && (
-          <div className="border-t pt-3 mt-4 max-h-44 overflow-y-auto">
-            <div className="font-semibold mb-2 text-gray-800">Activity</div>
-            {order.activities.length === 0 ? (
-              <div className="text-gray-500 text-sm">No activity to show.</div>
-            ) : (
-              <ul className="space-y-2">
-                {order.activities.map((a, idx) => (
-                  <li key={a.id || idx} className="flex flex-col py-1 px-2 bg-gray-50 rounded">
-                    <span className="text-xs text-gray-600">{a.date} &mdash; <span className="font-medium">{a.type}</span></span>
-                    <span className="text-sm">{a.description}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
 
         {mode !== 'view' && (
           <DialogFooter className="border-t pt-4">
