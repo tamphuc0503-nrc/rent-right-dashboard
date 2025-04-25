@@ -1,4 +1,3 @@
-
 import { addDays, startOfWeek } from 'date-fns';
 import { dummyInspectors } from './calendarUtils';
 
@@ -11,7 +10,6 @@ export function getWeekViewDragEventData(e: React.DragEvent) {
   }
 }
 
-// Generate week events (reusing same logic as before)
 export function generateWeekViewEvents() {
   const events = [];
   const startDate = startOfWeek(new Date());

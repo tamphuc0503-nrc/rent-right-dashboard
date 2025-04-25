@@ -1,7 +1,7 @@
-
 import React, { useState } from "react";
 import { format, addDays } from "date-fns";
-import { dummyInspectors, generateTimelineEvents } from "./calendarUtils";
+import { dummyInspectors } from "./calendarUtils";
+import { generateTimelineEvents } from "./timelineUtils";
 import TimelineEvent from "./TimelineEvent";
 import {
   setTimelineDragData,
