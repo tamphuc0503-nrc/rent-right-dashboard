@@ -71,6 +71,18 @@ export default function MyUpcomingOrders() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [modalAnchorPoint, setModalAnchorPoint] = useState<{ x: number; y: number } | undefined>();
+
+  const handleOpenOrderModal = (order: any, e?: React.MouseEvent) => {
+    if (e) {
+      setModalAnchorPoint({ x: e.clientX, y: e.clientY });
+    } else {
+      setModalAnchorPoint(undefined);
+    }
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen flex bg-gray-50">
@@ -138,10 +150,7 @@ export default function MyUpcomingOrders() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setIsModalOpen(true);
-                            }}
+                            onClick={(e) => handleOpenOrderModal(order, e)}
                           >
                             View
                           </Button>
@@ -175,7 +184,11 @@ export default function MyUpcomingOrders() {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <OrdersWeekView weekStart={weekStart} orders={orders} />
+                <OrdersWeekView
+                  weekStart={weekStart}
+                  orders={orders}
+                  setReviewOrder={(order: any, e?: React.MouseEvent) => handleOpenOrderModal(order, e)}
+                />
               </div>
             )}
 
@@ -184,6 +197,7 @@ export default function MyUpcomingOrders() {
               onClose={() => setIsModalOpen(false)}
               mode="view"
               order={selectedOrder}
+              anchorPoint={modalAnchorPoint}
             />
           </main>
         </div>

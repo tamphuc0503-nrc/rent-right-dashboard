@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format, addDays } from "date-fns";
 import { Button } from "../ui/button";
@@ -20,6 +19,7 @@ export type WeekViewOrder = {
 type OrdersWeekViewProps = {
   weekStart: Date;
   orders: WeekViewOrder[];
+  setReviewOrder?: (order: WeekViewOrder, e?: React.MouseEvent) => void; // optional override
 };
 
 const HOURS = Array.from({ length: 13 }, (_, i) => 8 + i); // 8 to 20 inclusive
@@ -38,8 +38,8 @@ const COLORS = [
   "bg-orange-500"      // 6
 ];
 
-export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProps) {
-  const [reviewOrder, setReviewOrder] = useReactState(null);
+export default function OrdersWeekView({ weekStart, orders, setReviewOrder }: OrdersWeekViewProps) {
+  const [reviewOrder, setLocalReviewOrder] = useReactState(null);
   const days = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
   const ordersByDate: Record<string, WeekViewOrder[]> = {};
   orders.forEach(order => {
@@ -118,8 +118,11 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
                           ${clr} text-white border-white
                         `}
                         style={{
-                          left: `calc(${leftPercent}% + 2px)`,
-                          width: `calc(${widthPercent}% - 4px)`,
+                          left: `calc(${((getTimeInMinutes(order.startTime) - 480) / (12 * 60)) * 100}% + 2px)`,
+                          width: `calc(${Math.max(
+                            ((getTimeInMinutes(order.endTime) - getTimeInMinutes(order.startTime)) / (12 * 60)) * 100,
+                            5
+                          )}% - 4px)`,
                           height: "calc(100% - 8px)",
                           zIndex: 2,
                         }}
@@ -136,7 +139,11 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
                             size="icon"
                             variant="outline"
                             className="bg-white/90 text-black hover:bg-black hover:text-white border"
-                            onClick={() => setReviewOrder(order)}
+                            onClick={(e) =>
+                              setReviewOrder
+                                ? setReviewOrder(order, e)
+                                : setLocalReviewOrder(order)
+                            }
                             aria-label="Review"
                           >
                             <Eye className="h-4 w-4" />
@@ -160,15 +167,16 @@ export default function OrdersWeekView({ weekStart, orders }: OrdersWeekViewProp
           </div>
         </div>
       </div>
-      {reviewOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setReviewOrder(null)}>
+      {/* Support fallback for local modal in case prop not provided */}
+      {(!setReviewOrder && reviewOrder) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={() => setLocalReviewOrder(null)}>
           <div className="bg-white rounded-xl p-6 shadow-lg min-w-[320px] max-w-[90vw]" onClick={e => e.stopPropagation()}>
             <h2 className="font-semibold text-lg mb-2">Order Review</h2>
             <div className="mb-2">{reviewOrder.address || "(No address)"}</div>
             <div>Client:&nbsp;<b>{reviewOrder.clientName}</b></div>
             <div>Type: {reviewOrder.orderType}</div>
             <div>Time: {reviewOrder.startTime} - {reviewOrder.endTime}</div>
-            <Button variant="default" className="mt-4" onClick={() => setReviewOrder(null)}>Close</Button>
+            <Button variant="default" className="mt-4" onClick={() => setLocalReviewOrder(null)}>Close</Button>
           </div>
         </div>
       )}
