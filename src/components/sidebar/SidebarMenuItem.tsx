@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,10 +18,11 @@ export function SidebarMenuItem({
   expandedItems,
   onItemClick,
   currentPath,
-}: SidebarMenuItemProps) {
+  onSubMenuClick,
+}: SidebarMenuItemProps & { onSubMenuClick?: (item: SidebarItem, subItem: { title: string; path: string }) => void }) {
   const isRecents = item.title === "Recents";
-  // Determine active path for submenu highlighting
-  const isParentActive = !!item.subItems && item.subItems.some(sub => currentPath === sub.path);
+  const isSettings = item.title === "Settings";
+  const isParentActive = !!item.subItems && item.subItems.some(sub => sub.path === currentPath);
   const isThisActive = !item.subItems && currentPath === item.path;
   const isExpanded = expandedItems.includes(item.title);
 
@@ -34,7 +34,7 @@ export function SidebarMenuItem({
             if (item.subItems && item.subItems.length > 0) {
               onItemClick(item);
             } else {
-              onItemClick(item); // will navigate for no subItems
+              onItemClick(item);
             }
           }}
           className={cn(
@@ -57,43 +57,25 @@ export function SidebarMenuItem({
             </>
           )}
         </button>
-        {/* Submenu, highlight the selected one, do not collapse on navigation */}
+        {/* Submenu */}
         {isOpen && item.subItems && isExpanded && (
           <ul className="ml-6 mt-1 space-y-1">
-            {item.subItems.map((subItem) => {
-              const isSubActive = currentPath === subItem.path;
-              if (isRecents) {
-                return (
-                  <li key={subItem.title}>
-                    <a
-                      href={subItem.path}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(
-                        "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600",
-                        isSubActive && "bg-accent text-accent-foreground"
-                      )}
-                    >
-                      {subItem.title}
-                    </a>
-                  </li>
-                );
-              } else {
-                return (
-                  <li key={subItem.title}>
-                    <Link
-                      to={subItem.path}
-                      className={cn(
-                        "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600",
-                        isSubActive && "bg-accent text-accent-foreground"
-                      )}
-                    >
-                      {subItem.title}
-                    </Link>
-                  </li>
-                );
-              }
-            })}
+            {item.subItems.map((subItem) => (
+              <li key={subItem.title}>
+                <button
+                  className={cn(
+                    "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600 w-full text-left"
+                  )}
+                  onClick={() => {
+                    if (onSubMenuClick) {
+                      onSubMenuClick(item, subItem);
+                    }
+                  }}
+                >
+                  {subItem.title}
+                </button>
+              </li>
+            ))}
           </ul>
         )}
       </div>

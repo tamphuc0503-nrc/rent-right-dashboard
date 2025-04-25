@@ -1,34 +1,24 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DocusignKeys() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>DocuSign Integration</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-medium">API Configuration</h3>
-            <p className="text-sm text-muted-foreground">
-              Manage your DocuSign API integration settings.
-            </p>
-          </div>
-          <div className="grid gap-4">
-            {/* Dummy API settings */}
-            <div className="p-4 border rounded">
-              <p className="font-medium">Integration Status</p>
-              <p className="text-sm text-muted-foreground">Connected</p>
-            </div>
-            <div className="p-4 border rounded">
-              <p className="font-medium">Environment</p>
-              <p className="text-sm text-muted-foreground">Production</p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div>
+      <h2 className="text-xl font-bold mb-4">DocuSign Keys</h2>
+      <ul className="space-y-2">
+        <li>
+          <strong>Integration Status:</strong> Connected
+        </li>
+        <li>
+          <strong>Environment:</strong> Production
+        </li>
+        <li>
+          <strong>API User:</strong> docusign-user@company.com
+        </li>
+        <li>
+          <strong>Account ID:</strong> 123456789
+        </li>
+      </ul>
+    </div>
   );
 }

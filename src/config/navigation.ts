@@ -1,4 +1,3 @@
-
 import {
   BarChart3,
   Users,
@@ -81,10 +80,19 @@ export const sidebarItems: SidebarItem[] = [
     icon: Users,
     path: "",
     subItems: [
-      // Removed Companies
       { title: "Clients", path: "/clients" },
       { title: "Agents", path: "/agents" },
     ],
   },
-  // Removed Settings menu
+  {
+    title: 'Settings',
+    icon: Settings,
+    path: '',
+    subItems: [
+      { title: 'General', path: 'general' },
+      { title: 'Custom Fields', path: 'custom-fields' },
+      { title: 'Templates', path: 'templates' },
+      { title: 'DocuSign Keys', path: 'docusign' },
+    ],
+  },
 ];

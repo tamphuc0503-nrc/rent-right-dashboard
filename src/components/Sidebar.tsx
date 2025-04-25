@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { useSidebarNavigation } from '@/hooks/use-sidebar-navigation';
 import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
 import { SidebarProfile } from './sidebar/SidebarProfile';
 import { sidebarItems } from '@/config/navigation';
+import SettingsPanel from "@/components/settings/SettingsPanel";
 
 type SidebarProps = {
   isMobile?: boolean;
@@ -14,6 +15,27 @@ type SidebarProps = {
 
 const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const { isOpen, expandedItems, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<undefined | string>(undefined);
+
+  const handleSidebarItemClick = (item: SidebarItem) => {
+    if (item.title === "Settings") {
+      setSettingsOpen(true);
+      setSettingsTab("general");
+    } else if (item.title === "Settings" && item.subItems?.length && item.subItems[0].path) {
+      setSettingsTab(item.subItems[0].path);
+      setSettingsOpen(true);
+    } else {
+      handleParentItemClick(item);
+    }
+  };
+
+  const handleSidebarSubMenuClick = (item: SidebarItem, subItem: { title: string; path: string }) => {
+    if (item.title === "Settings") {
+      setSettingsTab(subItem.path);
+      setSettingsOpen(true);
+    }
+  };
 
   return (
     <>
@@ -58,13 +80,19 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                 isOpen={isOpen}
                 expandedItems={expandedItems}
                 currentPath={location.pathname}
-                onItemClick={handleParentItemClick}
+                onItemClick={handleSidebarItemClick}
+                onSubMenuClick={handleSidebarSubMenuClick}
               />
             ))}
           </ul>
         </nav>
         <SidebarProfile isOpen={isOpen} />
       </aside>
+      <SettingsPanel
+        open={settingsOpen}
+        initialTab={settingsTab}
+        onClose={() => setSettingsOpen(false)}
+      />
     </>
   );
 };
