@@ -10,6 +10,7 @@ import { Mail, User, Lock } from 'lucide-react';
 import Header from '@/components/Header';
 import { apiClient } from '@/lib/api-client';
 import type { AuthResponse } from '@/lib/api-client';
+import { toast } from 'sonner';
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState('');
