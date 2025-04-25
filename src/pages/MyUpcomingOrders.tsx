@@ -1,24 +1,21 @@
+
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
-import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import { format, addDays, startOfWeek } from 'date-fns';
-import { Calendar as CalendarIcon, List as ListIcon } from "lucide-react";
+  format,
+  addDays,
+  startOfWeek
+} from 'date-fns';
 import OrderDetailsModal from '@/components/OrderDetailsModal';
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { TooltipProvider } from '@/components/ui/tooltip';
+
 import OrdersWeekView, { WeekViewOrder } from '@/components/orders/OrdersWeekView';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+import MyUpcomingOrdersHeader from './components/MyUpcomingOrdersHeader';
+import OrdersListView from './components/OrdersListView';
+import OrdersWeekPanel from './components/OrdersWeekPanel';
 
 function generateRandomOrdersForWeek(start: Date) {
   const orders: WeekViewOrder[] = [];
@@ -70,7 +67,6 @@ export default function MyUpcomingOrders() {
 
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [modalAnchorPoint, setModalAnchorPoint] = useState<{ x: number; y: number } | undefined>();
 
   const handleOpenOrderModal = (order: any, e?: React.MouseEvent) => {
@@ -90,108 +86,19 @@ export default function MyUpcomingOrders() {
         <div className={`flex-1 ${isMobile ? '' : 'ml-[var(--sidebar-width,256px)]'}`}>
           <DashboardHeader />
           <main className="p-6">
-            <div className="mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">My Upcoming Orders</h1>
-                <p className="text-gray-600">View your assigned inspection orders</p>
-              </div>
-              <div className="flex gap-2 items-center">
-                <Button
-                  variant={mode === 'list' ? 'default' : 'ghost'}
-                  onClick={() => setMode('list')}
-                  size="sm"
-                >
-                  <ListIcon className="h-4 w-4 mr-1" /> List View
-                </Button>
-                <Button
-                  variant={mode === 'week' ? 'default' : 'ghost'}
-                  onClick={() => setMode('week')}
-                  size="sm"
-                >
-                  <CalendarIcon className="h-4 w-4 mr-1" /> Week View
-                </Button>
-              </div>
-            </div>
-
+            <MyUpcomingOrdersHeader mode={mode} setMode={setMode} />
             {mode === "list" ? (
-              <div className="rounded-md border bg-white shadow">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Order ID</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Address</TableHead>
-                      <TableHead>Client</TableHead>
-                      <TableHead>Inspector</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {orders.map((order, idx) => (
-                      <TableRow key={order.id}>
-                        <TableCell>{order.id}</TableCell>
-                        <TableCell>{order.date}</TableCell>
-                        <TableCell>{order.address}</TableCell>
-                        <TableCell>{order.clientName}</TableCell>
-                        <TableCell>{order.inspectorName}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            order.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {order.status}
-                          </span>
-                        </TableCell>
-                        <TableCell>{order.orderType}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => handleOpenOrderModal(order, e)}
-                          >
-                            View
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <OrdersListView orders={orders} onView={handleOpenOrderModal} />
             ) : (
-              <div>
-                <div className="flex gap-3 mb-4 items-center">
-                  <span className="text-sm text-gray-700 font-semibold">Showing week of:</span>
-                  <Popover open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn("justify-start")}
-                      >
-                        <CalendarIcon className="h-4 w-4 mr-1" />
-                        {weekStart ? format(weekStart, "PPP") : <span>Pick a week</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={weekStart}
-                        onSelect={handleWeekChange}
-                        className="p-3 pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <OrdersWeekView
-                  weekStart={weekStart}
-                  orders={orders}
-                  setReviewOrder={(order: any, e?: React.MouseEvent) => handleOpenOrderModal(order, e)}
-                />
-              </div>
+              <OrdersWeekPanel
+                weekStart={weekStart}
+                onWeekChange={handleWeekChange}
+                isStartPickerOpen={isStartPickerOpen}
+                setIsStartPickerOpen={setIsStartPickerOpen}
+                orders={orders}
+                onReviewOrder={handleOpenOrderModal}
+              />
             )}
-
             <OrderDetailsModal
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
