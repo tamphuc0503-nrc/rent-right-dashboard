@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { Calendar as CalendarIcon, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import DashboardHeader from '@/components/DashboardHeader';
 import Sidebar from '@/components/Sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MapOrderDayGroup from "@/components/orders/MapOrderDayGroup";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const BASE_DATE = new Date(2024, 3, 26); // April 26, 2024
 
@@ -57,8 +59,16 @@ const OrderMapView = () => {
   const isMobile = useIsMobile();
   const [selectedDate, setSelectedDate] = useState<Date>(BASE_DATE);
   const [weekRange, setWeekRange] = useState(7);
+
+  // Skeleton loading (1 second)
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, [selectedDate, weekRange]);
+
   const orders = generateDummyOrders(BASE_DATE);
-  const [mapCenter, setMapCenter] = useState([-122.4194, 37.7749]);
 
   const dates = [];
   for (let i = 0; i < weekRange; i++) {
@@ -75,6 +85,18 @@ const OrderMapView = () => {
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Map of Upcoming Orders</h1>
             <div className="flex items-center gap-2">
+              {/* Week tags first */}
+              {WEEK_TAGS.map(w =>
+                <Button
+                  key={w.value}
+                  size="sm"
+                  variant={weekRange === w.value ? "default" : "outline"}
+                  className="px-3 py-1"
+                  onClick={() => setWeekRange(w.value)}
+                >
+                  {w.label}
+                </Button>
+              )}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="gap-2">
@@ -92,46 +114,63 @@ const OrderMapView = () => {
                   />
                 </PopoverContent>
               </Popover>
-              {WEEK_TAGS.map(w =>
-                <Button
-                  key={w.value}
-                  size="sm"
-                  variant={weekRange === w.value ? "default" : "outline"}
-                  className="px-3 py-1"
-                  onClick={() => setWeekRange(w.value)}
-                >
-                  {w.label}
-                </Button>
-              )}
             </div>
           </div>
-          <div className="">
-            {dates.map((date) => {
-              const dateOrders = orders.filter(order => isSameDay(order.date, date));
-              if (!dateOrders.length) return null;
-              return (
-                <MapOrderDayGroup
-                  key={date.toISOString()}
-                  day={date}
-                  count={dateOrders.length}
-                >
-                  <div className="mb-4 bg-gray-100 rounded h-44 flex items-center justify-center">
-                    <MapPin className="h-10 w-10 text-blue-400" />
-                    <span className="ml-2 text-gray-700">Map Preview: {dateOrders.length} order(s)</span>
+          <div>
+            {/* Skeleton loader for 7 groups by default when loading */}
+            {loading ? (
+              Array.from({ length: 7 }).map((_, idx) => (
+                <div key={idx} className="mb-6 border rounded-lg shadow-sm overflow-hidden bg-white animate-pulse">
+                  <div className="flex items-center px-4 py-2 bg-gray-50">
+                    <Skeleton className="h-4 w-4 rounded-full mr-2" />
+                    <div className="font-semibold text-gray-400 h-5 w-60 bg-gray-100 rounded"></div>
+                    <span className="ml-3 inline-block text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-1 w-16"></span>
+                    <span className="ml-auto text-gray-300 w-6 h-4 bg-gray-100 rounded" />
                   </div>
-                  <ul>
-                    {dateOrders.map(order => (
-                      <li key={order.id} className="mb-2 flex items-center gap-4">
-                        <span className="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-700 w-8 h-8 mr-2"><MapPin className="h-4 w-4" /></span>
-                        <span className="font-semibold">{order.address}</span>
-                        <span className="text-gray-500 text-sm">{order.client}</span>
-                        <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">{order.type}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </MapOrderDayGroup>
-              );
-            })}
+                  <div className="flex flex-col md:flex-row">
+                    <div className="h-44 bg-gray-100 flex-1" />
+                    <div className="flex-1 p-4">
+                      {[...Array(2)].map((_,i) => (
+                        <div key={i} className="h-8 w-full bg-gray-100 rounded mb-2"></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              dates.map((date) => {
+                const dateOrders = orders.filter(order => isSameDay(order.date, date));
+                if (!dateOrders.length) return null;
+                return (
+                  <MapOrderDayGroup
+                    key={date.toISOString()}
+                    day={date}
+                    count={dateOrders.length}
+                  >
+                    {{
+                      map: (
+                        <div className="mb-4 bg-gray-100 rounded h-44 flex items-center justify-center">
+                          <MapPin className="h-10 w-10 text-blue-400" />
+                          <span className="ml-2 text-gray-700">Map Preview: {dateOrders.length} order(s)</span>
+                        </div>
+                      ),
+                      orders: (
+                        <ul>
+                          {dateOrders.map(order => (
+                            <li key={order.id} className="mb-2 flex items-center gap-4">
+                              <span className="inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-700 w-8 h-8 mr-2"><MapPin className="h-4 w-4" /></span>
+                              <span className="font-semibold">{order.address}</span>
+                              <span className="text-gray-500 text-sm">{order.client}</span>
+                              <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">{order.type}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )
+                    }}
+                  </MapOrderDayGroup>
+                );
+              })
+            )}
           </div>
         </main>
       </div>
@@ -140,3 +179,4 @@ const OrderMapView = () => {
 };
 
 export default OrderMapView;
+
