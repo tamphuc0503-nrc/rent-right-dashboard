@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form } from "@/components/ui/form";
 import { GeneralSection } from "./GeneralSection";
@@ -42,15 +41,14 @@ export type OrderDetailsContentProps = {
     thirdPartyFee?: string | number;
     discountFee?: string | number;
     processingFee?: string | number;
-    activities?: Activity[];
   };
-  form: any;      // react-hook-form useForm instance, used by modal -- can be null if on detail page
+  form: any;
   editable?: boolean;
 };
 
 /**
  * Renders all sections (tabs) for inspection order details.
- * Note: Designed to work inside detail modal or full page - pass "form" for edit, null/undefined for view.
+ * Activities section removed; handled by OrderActivityList instead.
  */
 export function OrderDetailsContent({ order, form, editable = false }: OrderDetailsContentProps) {
   return (
@@ -202,22 +200,6 @@ export function OrderDetailsContent({ order, form, editable = false }: OrderDeta
         </div>
       </Tabs>
       <Separator className="my-3"/>
-      {/* Activity */}
-      <div>
-        <div className="font-semibold mb-2 text-gray-800">Activity</div>
-        {order.activities && order.activities.length === 0 ? (
-          <div className="text-gray-500 text-sm">No activity to show.</div>
-        ) : (
-          <ul className="space-y-2">
-            {order.activities && order.activities.map((a, idx) => (
-              <li key={a.id || idx} className="flex flex-col py-1 px-2 bg-gray-50 rounded">
-                <span className="text-xs text-gray-600">{a.date} &mdash; <span className="font-medium">{a.type}</span></span>
-                <span className="text-sm">{a.description}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
     </div>
   );
 }

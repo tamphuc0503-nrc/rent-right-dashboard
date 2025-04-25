@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -5,6 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useEffect } from "react";
 import { addRecentOrderId } from "@/utils/recentOrders";
 import { OrderDetailsContent } from "@/components/order-form/OrderDetailsContent";
+import { OrderActivityList } from "@/components/order-form/OrderActivityList";
 import OrderActions from "@/components/OrderActions";
 
 const DUMMY_ORDERS = [
@@ -107,8 +109,13 @@ export default function OrderDetailPage() {
               currentStatus={order.status as any}
             />
           </div>
-          <div className="bg-white rounded-md border px-6 py-6 shadow space-y-2">
-            <OrderDetailsContent order={order} form={null} editable={false} />
+          <div className={`bg-white rounded-md border px-0 py-0 shadow grid ${isMobile ? "block" : "grid-cols-2"} gap-0`}>
+            <div className="px-6 py-6 border-r border-gray-100">
+              <OrderDetailsContent order={order} form={null} editable={false} />
+            </div>
+            <div className="px-6 py-6">
+              <OrderActivityList activities={order.activities} />
+            </div>
           </div>
           <button
             className="mt-6 px-4 py-2 text-blue-600 ring-1 ring-blue-200 rounded hover:bg-blue-50"
