@@ -2,6 +2,13 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+const customFieldsData = [
+  { name: "Foundation Type", type: "foundation-type", description: "Type of building foundation" },
+  { name: "Roof Material", type: "add-on", description: "Material used for roofing" },
+  { name: "Pool Type", type: "add-on", description: "Type of swimming pool if present" },
+  { name: "HVAC System", type: "foundation-type", description: "Type of heating and cooling system" },
+];
+
 export default function CustomFields() {
   return (
     <Card>
@@ -17,15 +24,19 @@ export default function CustomFields() {
             </p>
           </div>
           <div className="grid gap-4">
-            {/* Dummy custom fields */}
-            <div className="p-4 border rounded">
-              <p className="font-medium">Active Custom Fields</p>
-              <p className="text-sm text-muted-foreground">5 fields configured</p>
-            </div>
-            <div className="p-4 border rounded">
-              <p className="font-medium">Last Modified</p>
-              <p className="text-sm text-muted-foreground">2 days ago</p>
-            </div>
+            {customFieldsData.map((field, index) => (
+              <div key={index} className="p-4 border rounded">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">{field.name}</p>
+                    <p className="text-sm text-muted-foreground">{field.description}</p>
+                  </div>
+                  <span className="text-sm px-2 py-1 bg-secondary rounded-full">
+                    {field.type}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>
