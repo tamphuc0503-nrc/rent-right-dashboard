@@ -9,7 +9,6 @@ import {
   Calendar,
   Clock4,
   Mail,
-  // User // REMOVE this import, since we will not use it
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
@@ -49,7 +48,7 @@ function getRecentsSubItems() {
   return fullList.slice(0, 5);
 }
 
-// REMOVE the Profile item from sidebarItems
+// Add new Externals menu
 export const sidebarItems: SidebarItem[] = [
   {
     title: 'Dashboard',
@@ -82,23 +81,23 @@ export const sidebarItems: SidebarItem[] = [
     icon: Mail,
     path: '/messages',
   },
-  // Profile item REMOVED HERE
+  // New Externals group
   {
-    title: 'Inspectors',
-    icon: UserCircle,
-    path: '/inspectors',
-  },
-  {
-    title: 'Companies',
-    icon: Building,
-    path: '/companies',
+    title: "Externals",
+    icon: Users,
+    path: "",
+    subItems: [
+      { title: "Companies", path: "/companies" },
+      { title: "Clients", path: "/clients" },
+      { title: "Agents", path: "/agents" },
+    ],
   },
   {
     title: 'Settings',
     icon: Settings,
     path: '/settings',
     subItems: [
-      { title: 'General Settings', path: '/settings/general' },
+      { title: 'General', path: '/settings/general' },
       { title: 'Change Password', path: '/settings/password' },
       { title: 'DocuSign Keys', path: '/settings/docusign' },
       { title: 'Custom Fields', path: '/settings/custom-fields' },
