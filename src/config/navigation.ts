@@ -86,16 +86,5 @@ export const sidebarItems: SidebarItem[] = [
       { title: "Agents", path: "/agents" },
     ],
   },
-  {
-    title: 'Settings',
-    icon: Settings,
-    path: '/settings',
-    subItems: [
-      { title: 'General', path: '/settings/general' },
-      { title: 'Change Password', path: '/settings/password' },
-      { title: 'DocuSign Keys', path: '/settings/docusign' },
-      { title: 'Custom Fields', path: '/settings/custom-fields' },
-      { title: 'Templates', path: '/settings/templates' },
-    ],
-  },
+  // Removed Settings menu
 ];
