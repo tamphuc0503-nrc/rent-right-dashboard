@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -67,6 +66,13 @@ const sidebarItems: SidebarItem[] = [
     title: 'Settings',
     icon: Settings,
     path: '/settings',
+    subItems: [
+      { title: 'General Settings', path: '/settings/general' },
+      { title: 'Change Password', path: '/settings/password' },
+      { title: 'Notifications', path: '/settings/notifications' },
+      { title: 'DocuSign Keys', path: '/settings/docusign' },
+      { title: 'Custom Fields', path: '/settings/custom-fields' },
+    ],
   },
 ];
 

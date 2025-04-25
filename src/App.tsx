@@ -1,4 +1,3 @@
-
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -18,6 +17,12 @@ import Companies from "./pages/Companies";
 import SchedulingCalendar from "./pages/SchedulingCalendar";
 import OrderMapView from "./pages/OrderMapView";
 import MyUpcomingOrders from "./pages/MyUpcomingOrders";
+import SettingsLayout from "./components/settings/SettingsLayout";
+import GeneralSettings from "./pages/settings/GeneralSettings";
+import ChangePassword from "./pages/settings/ChangePassword";
+import Notifications from "./pages/settings/Notifications";
+import DocusignKeys from "./pages/settings/DocusignKeys";
+import CustomFields from "./pages/settings/CustomFields";
 
 const queryClient = new QueryClient();
 
@@ -44,8 +49,13 @@ const App = () => (
             <Route path="/about" element={<NotFound />} />
             <Route path="/vendors" element={<NotFound />} />
             <Route path="/landlords" element={<NotFound />} />
-            <Route path="/settings" element={<NotFound />} />
-            <Route path="/subscriptions" element={<NotFound />} />
+            <Route path="/settings" element={<SettingsLayout />}>
+              <Route path="general" element={<GeneralSettings />} />
+              <Route path="password" element={<ChangePassword />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="docusign" element={<DocusignKeys />} />
+              <Route path="custom-fields" element={<CustomFields />} />
+            </Route>
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
             <Route path="/calendar/upcoming/orders" element={<MyUpcomingOrders />} />
             <Route path="*" element={<NotFound />} />
