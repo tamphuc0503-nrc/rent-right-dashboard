@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Mail, User, Lock, AlertCircle } from 'lucide-react';
+import { Mail, User, Lock } from 'lucide-react';
 import Header from '@/components/Header';
-import { toast } from 'sonner';
+import { apiClient } from '@/lib/api-client';
+import type { AuthResponse } from '@/lib/api-client';
 
 const SignUp = () => {
   const [firstName, setFirstName] = useState('');
@@ -19,7 +20,7 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!acceptTerms) {
@@ -29,12 +30,23 @@ const SignUp = () => {
     
     setIsLoading(true);
     
-    // Simulate registration
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success('Account created successfully!');
+    const response = await apiClient<AuthResponse>('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+        password,
+        name: `${firstName} ${lastName}`.trim()
+      })
+    });
+
+    setIsLoading(false);
+
+    if (response) {
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
+      localStorage.setItem('user', JSON.stringify(response.user));
       navigate('/dashboard');
-    }, 1000);
+    }
   };
 
   return (
