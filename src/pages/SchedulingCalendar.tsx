@@ -1,264 +1,20 @@
+
 import React, { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { format, addWeeks, startOfWeek, endOfWeek, addDays } from 'date-fns';
-import { Calendar as CalendarIcon, LayoutGrid, Clock, List } from 'lucide-react';
+import { format } from 'date-fns';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from '@/components/ui/button';
+import { Calendar as CalendarIcon, LayoutGrid, Clock, List } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-const dummyInspectors = [
-  { id: 1, name: 'John Smith', color: 'bg-blue-500' },
-  { id: 2, name: 'Sarah Johnson', color: 'bg-green-500' },
-  { id: 3, name: 'Mike Brown', color: 'bg-purple-500' },
-  { id: 4, name: 'Emma Davis', color: 'bg-yellow-500' },
-  { id: 5, name: 'James Wilson', color: 'bg-pink-500' },
-  { id: 6, name: 'Lisa Anderson', color: 'bg-orange-500' },
-];
-
-function getDragEventData(e: React.DragEvent) {
-  try {
-    return JSON.parse(e.dataTransfer.getData('application/json'));
-  } catch {
-    return null;
-  }
-}
-
-const generateTimelineEvents = () => {
-  const events = [];
-  const startDate = new Date();
-  
-  for (let i = 0; i < 6; i++) {
-    const inspectorEvents = [];
-    for (let j = 0; j < 3; j++) {
-      const dayOffset = Math.floor(Math.random() * 14);
-      const startHour = 8 + Math.floor(Math.random() * 6);
-      const duration = 2 + Math.floor(Math.random() * 2);
-      
-      inspectorEvents.push({
-        id: `${i}-${j}`,
-        title: `Inspection at ${1000 + j} Oak St`,
-        start: addDays(startDate, dayOffset).setHours(startHour, 0, 0, 0),
-        end: addDays(startDate, dayOffset).setHours(startHour + duration, 0, 0, 0),
-      });
-    }
-    events.push({
-      inspector: dummyInspectors[i],
-      events: inspectorEvents,
-    });
-  }
-  return events;
-};
-
-const generateWeekViewEvents = () => {
-  const events = [];
-  const startDate = startOfWeek(new Date());
-  
-  dummyInspectors.forEach(inspector => {
-    for (let i = 0; i < 5; i++) {
-      const dayOffset = Math.floor(Math.random() * 7);
-      const startHour = 8 + Math.floor(Math.random() * 6);
-      const duration = 1 + Math.floor(Math.random() * 3);
-      
-      events.push({
-        id: `${inspector.id}-${i}`,
-        title: `Inspection at ${1000 + Math.floor(Math.random() * 100)} Oak St`,
-        inspector: inspector.name,
-        start: addDays(startDate, dayOffset).setHours(startHour, 0, 0, 0),
-        end: addDays(startDate, dayOffset).setHours(startHour + duration, 0, 0, 0),
-        color: inspector.color,
-      });
-    }
-  });
-  
-  return events;
-};
-
-const TimelineView = () => {
-  const [timelineEvents, setTimelineEvents] = useState(generateTimelineEvents());
-  const days = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i));
-
-  function handleDragStart(e: React.DragEvent, inspectorIdx: number, eventIdx: number) {
-    e.dataTransfer.setData(
-      'application/json',
-      JSON.stringify({
-        fromInspector: inspectorIdx,
-        fromEventIdx: eventIdx,
-        type: 'timeline',
-      })
-    );
-    e.dataTransfer.effectAllowed = 'move';
-  }
-
-  function handleDrop(e: React.DragEvent, inspectorIdx: number, date: Date) {
-    const data = getDragEventData(e);
-    if (!data || data.type !== 'timeline') return;
-    setTimelineEvents(prev => {
-      const prevEvents = [...prev];
-      const event = { ...prev[prevEvents[data.fromInspector].inspector.id - 1].events[data.fromEventIdx] };
-      const origStart = new Date(event.start);
-      const origEnd = new Date(event.end);
-      const newStart = new Date(date);
-      newStart.setHours(origStart.getHours(), origStart.getMinutes(), 0, 0);
-      const newEnd = new Date(date);
-      newEnd.setHours(origEnd.getHours(), origEnd.getMinutes(), 0, 0);
-
-      prevEvents[data.fromInspector].events.splice(data.fromEventIdx, 1);
-      prevEvents[inspectorIdx].events.push({
-        ...event,
-        start: newStart,
-        end: newEnd,
-      });
-      return prevEvents;
-    });
-  }
-
-  return (
-    <div className="border rounded-lg p-4 overflow-x-auto">
-      <div className="min-w-[1200px]">
-        <div className="grid grid-cols-[200px_repeat(14,1fr)] gap-1">
-          <div className="h-12 flex items-center font-semibold">Inspector</div>
-          {days.map((day) => (
-            <div key={day.toISOString()} className="h-12 text-center border-l">
-              <div className="text-sm font-medium">{format(day, 'EEE')}</div>
-              <div className="text-xs">{format(day, 'MMM d')}</div>
-            </div>
-          ))}
-          {timelineEvents.map(({ inspector, events }, inspectorIdx) => (
-            <React.Fragment key={inspector.id}>
-              <div className="h-20 flex items-center px-2 font-medium">
-                {inspector.name}
-              </div>
-              {days.map((day) => (
-                <div
-                  key={day.toISOString()}
-                  className="h-20 border-l relative"
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={e => handleDrop(e, inspectorIdx, day)}
-                  style={{ minHeight: 48, minWidth: 48 }}
-                >
-                  {events
-                    .filter(event =>
-                      format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
-                    )
-                    .map((event, eventIdx) => (
-                      <div
-                        key={event.id}
-                        className={`absolute top-2 left-1 right-1 p-1 text-xs text-white rounded cursor-grab ${inspector.color}`}
-                        title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
-                        draggable
-                        onDragStart={e => handleDragStart(e, inspectorIdx, events.indexOf(event))}
-                        style={{ zIndex: 2 }}
-                      >
-                        {format(event.start, 'HH:mm')} {event.title}
-                      </div>
-                    ))}
-                </div>
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const WeekViewCalendar = () => {
-  const [events, setEvents] = useState(generateWeekViewEvents());
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 8 PM
-  const days = Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(new Date()), i));
-
-  function handleDragStart(e: React.DragEvent, eventId: string) {
-    e.dataTransfer.setData(
-      'application/json',
-      JSON.stringify({
-        eventId,
-        type: 'week',
-      })
-    );
-    e.dataTransfer.effectAllowed = 'move';
-  }
-
-  function handleDrop(e: React.DragEvent, day: Date, hour: number) {
-    const data = getDragEventData(e);
-    if (!data || data.type !== 'week') return;
-    setEvents(prev => {
-      const idx = prev.findIndex(ev => ev.id === data.eventId);
-      if (idx === -1) return prev;
-      const event = { ...prev[idx] };
-      const origDuration = (new Date(event.end).getHours() - new Date(event.start).getHours());
-      const start = new Date(day);
-      start.setHours(hour, 0, 0, 0);
-      const end = new Date(day);
-      end.setHours(hour + origDuration, 0, 0, 0);
-      event.start = start.getTime();
-      event.end = end.getTime();
-      const updated = [...prev];
-      updated[idx] = event;
-      return updated;
-    });
-  }
-
-  return (
-    <div className="h-[600px] border rounded-lg p-4 overflow-auto">
-      <div className="min-w-[800px]">
-        <div className="grid grid-cols-[100px_repeat(7,1fr)] border-b">
-          <div className="p-2 font-medium">Time</div>
-          {days.map(day => (
-            <div key={day.toISOString()} className="p-2 text-center border-l">
-              <div className="font-medium">{format(day, 'EEE')}</div>
-              <div className="text-sm text-muted-foreground">{format(day, 'MMM d')}</div>
-            </div>
-          ))}
-        </div>
-        {hours.map(hour => (
-          <div key={hour} className="grid grid-cols-[100px_repeat(7,1fr)] border-b">
-            <div className="p-2 text-sm">{format(new Date().setHours(hour), 'ha')}</div>
-            {days.map(day => {
-              const currentSlotStart = day.setHours(hour, 0, 0, 0);
-              const currentSlotEnd = day.setHours(hour + 1, 0, 0, 0);
-              const slotEvents = events.filter(event =>
-                event.start >= currentSlotStart && event.start < currentSlotEnd
-              );
-              return (
-                <div
-                  key={`${day.toISOString()}-${hour}`}
-                  className="border-l p-1 min-h-[60px] relative"
-                  onDragOver={e => e.preventDefault()}
-                  onDrop={e => handleDrop(e, new Date(day), hour)}
-                  style={{ minHeight: 48 }}
-                >
-                  {slotEvents.map(event => (
-                    <div
-                      key={event.id}
-                      className={`absolute top-0 left-1 right-1 p-1 text-xs text-white rounded cursor-grab ${event.color}`}
-                      style={{
-                        height: `${(new Date(event.end).getHours() - new Date(event.start).getHours()) * 60}px`
-                      }}
-                      title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
-                      draggable
-                      onDragStart={e => handleDragStart(e, event.id)}
-                    >
-                      <div className="truncate">{event.title}</div>
-                      <div className="text-xs opacity-90">{event.inspector}</div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+import TimelineView from '@/components/scheduling/TimelineView';
+import WeekViewCalendar from '@/components/scheduling/WeekViewCalendar';
 
 const SchedulingCalendar = () => {
   const isMobile = useIsMobile();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [activeRange, setActiveRange] = useState(0);
   const [view, setView] = useState('month');
 
   return (
@@ -304,7 +60,6 @@ const SchedulingCalendar = () => {
               </Popover>
             </div>
           </div>
-          
           <div className="bg-white rounded-lg shadow">
             {view === 'month' && (
               <Calendar
