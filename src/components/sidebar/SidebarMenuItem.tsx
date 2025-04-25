@@ -18,6 +18,7 @@ export function SidebarMenuItem({
   expandedItem, 
   onItemClick 
 }: SidebarMenuItemProps) {
+  const isRecents = item.title === "Recents";
   return (
     <li>
       <div className="relative">
@@ -47,12 +48,24 @@ export function SidebarMenuItem({
           <ul className="ml-6 mt-1 space-y-1">
             {item.subItems.map((subItem) => (
               <li key={subItem.title}>
-                <Link
-                  to={subItem.path}
-                  className="block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600"
-                >
-                  {subItem.title}
-                </Link>
+                {/* For recents, open in new tab */}
+                {isRecents ? (
+                  <a
+                    href={subItem.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600"
+                  >
+                    {subItem.title}
+                  </a>
+                ) : (
+                  <Link
+                    to={subItem.path}
+                    className="block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600"
+                  >
+                    {subItem.title}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

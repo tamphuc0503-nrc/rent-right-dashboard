@@ -24,6 +24,7 @@ import Notifications from "./pages/settings/Notifications";
 import DocusignKeys from "./pages/settings/DocusignKeys";
 import CustomFields from "./pages/settings/CustomFields";
 import Templates from "./pages/settings/Templates";
+import OrderDetailPage from "./pages/OrderDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -56,12 +57,13 @@ const App = () => (
               <Route path="notifications" element={<Notifications />} />
               <Route path="docusign" element={<DocusignKeys />} />
               <Route path="custom-fields" element={<CustomFields />} />
-              <Route path="templates" element={<Templates />} /> {/* Added Templates route */}
+              <Route path="templates" element={<Templates />} />
             </Route>
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
             <Route path="/calendar/upcoming/orders" element={<MyUpcomingOrders />} />
             <Route path="/calendar/map" element={<OrderMapView />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/orders/:orderId" element={<OrderDetailPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
