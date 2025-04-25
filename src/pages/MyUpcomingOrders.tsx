@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
-import OrdersTimeline from "@/components/orders/OrdersTimeline"; // New import
+import OrdersTimeline from "@/components/orders/OrdersTimeline";
 import {
   Table,
   TableHeader,
@@ -20,16 +19,33 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
-function getDummyOrders() {
-  return Array.from({ length: 10 }, (_, i) => ({
-    id: `ORD-${2024000 + i}`,
-    date: format(addDays(new Date(), i), 'yyyy-MM-dd'),
-    address: `${1000 + i} Oak Street, City ${i + 1}`,
-    clientName: `Client ${i + 1}`,
-    status: i % 3 === 0 ? "scheduled" : i % 3 === 1 ? "completed" : "pending",
-    inspectorName: `Inspector ${i % 3 + 1}`,
-    orderType: i % 2 === 0 ? "Home Inspection" : "Property Assessment",
-  }));
+function getDummyOrders(timelineStart: Date, timelineEnd: Date) {
+  const days = [];
+  let cur = new Date(timelineStart);
+  while (cur <= timelineEnd) {
+    days.push(new Date(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  const orders = [];
+  days.forEach((day, i) => {
+    for (let j = 0; j < 2; j++) {
+      const inspectionHour = j === 0 ? 9 : 14;
+      const dateObj = new Date(day);
+      dateObj.setHours(inspectionHour, 0, 0, 0);
+      orders.push({
+        id: `ORD-${format(dateObj, "yyyyMMdd")}-${j + 1}`,
+        date: format(dateObj, 'yyyy-MM-dd'),
+        address: `${1000 + i * 2 + j} Oak Street, City ${i + 1}`,
+        clientName: `Client ${i + 1}-${j + 1}`,
+        status: (i + j) % 3 === 0 ? "scheduled" : (j % 3 === 1 ? "completed" : "pending"),
+        inspectorName: `Inspector ${j === 0 ? "John" : "Sarah"}`,
+        orderType: j % 2 === 0 ? "Home Inspection" : "Property Assessment",
+        time: format(dateObj, "HH:mm"),
+        timeObj: new Date(dateObj),
+      });
+    }
+  });
+  return orders;
 }
 
 export default function MyUpcomingOrders() {
@@ -37,13 +53,13 @@ export default function MyUpcomingOrders() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mode, setMode] = useState<"list" | "timeline">("list");
-  const orders = getDummyOrders();
 
-  // For timeline date range customizer
   const [timelineStart, setTimelineStart] = useState<Date>(new Date());
   const [timelineEnd, setTimelineEnd] = useState<Date>(addDays(new Date(), 6));
   const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
   const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
+
+  const orders = getDummyOrders(timelineStart, timelineEnd);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -129,7 +145,6 @@ export default function MyUpcomingOrders() {
             <div className="bg-white rounded-lg shadow p-4">
               <div className="flex flex-col md:flex-row gap-2 md:items-center mb-4">
                 <span className="text-sm text-gray-700 font-semibold mr-2">Show timeline from:</span>
-                {/* Start date picker */}
                 <Popover open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -156,7 +171,6 @@ export default function MyUpcomingOrders() {
                   </PopoverContent>
                 </Popover>
                 <span className="px-2 text-gray-400">to</span>
-                {/* End date picker */}
                 <Popover open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
