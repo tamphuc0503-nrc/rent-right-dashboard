@@ -26,6 +26,7 @@ import CustomFields from "./pages/settings/CustomFields";
 import Templates from "./pages/settings/Templates";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/about" element={<NotFound />} />
             <Route path="/vendors" element={<NotFound />} />
             <Route path="/landlords" element={<NotFound />} />
+            <Route path="/dashboard/profile" element={<Profile />} />
             <Route path="/settings" element={<SettingsLayout />}>
               <Route path="general" element={<GeneralSettings />} />
               <Route path="password" element={<ChangePassword />} />

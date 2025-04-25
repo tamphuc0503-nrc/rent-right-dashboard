@@ -1,4 +1,3 @@
-
 import {
   BarChart3,
   Users,
@@ -8,7 +7,8 @@ import {
   ClipboardList,
   Calendar,
   Clock4,
-  Mail
+  Mail,
+  User
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
@@ -81,6 +81,11 @@ export const sidebarItems: SidebarItem[] = [
     path: '/messages',
   },
   {
+    title: 'Profile',
+    icon: User,
+    path: '/dashboard/profile',
+  },
+  {
     title: 'Inspectors',
     icon: UserCircle,
     path: '/inspectors',
@@ -103,4 +108,3 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
-

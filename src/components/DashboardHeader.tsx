@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const DashboardHeader = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-30 w-full bg-white border-b border-gray-200 shadow-sm">
@@ -37,7 +38,6 @@ const DashboardHeader = () => {
                 </Badge>
               </Button>
             </div>
-            
             <div className="relative">
               <Button variant="ghost" size="icon" className="text-gray-600">
                 <Bell className="h-5 w-5" />
@@ -46,7 +46,6 @@ const DashboardHeader = () => {
                 </Badge>
               </Button>
             </div>
-            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -58,8 +57,8 @@ const DashboardHeader = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to="/dashboard/profile" className="w-full">Profile</Link>
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link to="/dashboard/settings" className="w-full">Settings</Link>

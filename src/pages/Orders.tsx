@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,6 +23,8 @@ import OrderActions from "@/components/OrderActions";
 import { useToast } from "@/hooks/use-toast";
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import ScheduleOrderModal from '@/components/ScheduleOrderModal';
+import { Button } from "@/components/ui/button";
+import { Bell, Send, FilePlus, Percent } from "lucide-react"; // for quick actions colorized icons
 
 const generateSampleOrders = (count: number) => {
   const statuses = [
@@ -202,9 +203,7 @@ export default function Orders() {
         <main className="p-6">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Inspection Orders</h1>
-            <p className="text-gray-600">
-              Manage and track your inspection orders.
-            </p>
+            <p className="text-gray-600">Manage and track your inspection orders.</p>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
             <div className="w-full sm:w-auto flex-1 flex gap-2">
@@ -259,8 +258,63 @@ export default function Orders() {
               </Button>
             </div>
           </div>
-          <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {layout === 'list' ? (
+
+          {isMobile ? (
+            // Mobile layout
+            <div className="space-y-3">
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, idx) => (
+                    <div className="bg-white rounded-lg p-4 shadow flex flex-col gap-3 animate-pulse" key={idx}>
+                      <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+                      <div className="h-3 w-2/3 bg-gray-100 rounded"></div>
+                      <div className="flex gap-2">
+                        <div className="h-4 w-10 bg-violet-200 rounded"></div>
+                        <div className="h-4 w-10 bg-orange-200 rounded"></div>
+                      </div>
+                    </div>
+                  ))
+                : paginatedOrders.map(order => (
+                    <div key={order.id} className="bg-white rounded-lg shadow p-4 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-lg font-bold">{order.orderNumber}</div>
+                          <div className="text-xs text-gray-500">{order.propertyAddress}</div>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColors[order.status]}`}>
+                          {order.status.replace(/^\w/, c => c.toUpperCase())}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-700">Inspector: {order.inspectorName}</div>
+                      <div className="text-xs text-gray-700">Date: {order.inspectionDate}</div>
+                      <div className="flex gap-1 mt-2 flex-wrap">
+                        <Button size="icon" variant="ghost" className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                          title="Reminder" onClick={() => alert("Send reminder")}>
+                          <Bell className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                          title="Send Invoice" onClick={() => alert("Send invoice")}>
+                          <Send className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="bg-green-100 hover:bg-green-200 text-green-700"
+                          title="Add Note" onClick={() => alert("Add note")}>
+                          <FilePlus className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="bg-pink-100 hover:bg-pink-200 text-pink-700"
+                          title="Apply Coupon" onClick={() => alert("Apply coupon")}>
+                          <Percent className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" className="bg-purple-700 text-white hover:bg-purple-800 ml-auto"
+                          onClick={() => handleView(order)}>
+                          View
+                        </Button>
+                      </div>
+                    </div>
+                ))
+              }
+            </div>
+          ) : (
+            // Desktop layout
+            <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px] overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -269,20 +323,31 @@ export default function Orders() {
                     <TableHead>Inspector</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Cost</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    {/* Move Quick Actions column before Actions */}
                     <TableHead className="text-right">Quick Actions</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-right">Cost</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, idx) => (
                       <TableRow key={idx}>
-                        {Array.from({ length: 8 }).map((_, cellIdx) => (
-                          <TableCell key={cellIdx}>
-                            <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                        ))}
+                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex gap-1 justify-end">
+                            <div className="h-6 w-6 rounded bg-orange-200 animate-pulse"></div>
+                            <div className="h-6 w-6 rounded bg-blue-200 animate-pulse"></div>
+                            <div className="h-6 w-6 rounded bg-green-200 animate-pulse"></div>
+                            <div className="h-6 w-6 rounded bg-pink-200 animate-pulse"></div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right"><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
+                        <TableCell className="text-right"><div className="h-4 bg-gray-200 rounded animate-pulse" /></TableCell>
                       </TableRow>
                     ))
                   ) : (
@@ -297,9 +362,48 @@ export default function Orders() {
                             {order.status.replace(/^\w/, c => c.toUpperCase())}
                           </span>
                         </TableCell>
+                        {/* Quick Actions Cell */}
                         <TableCell className="text-right">
-                          {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                              title="Reminder"
+                              onClick={() => alert("Send reminder")}
+                            >
+                              <Bell className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                              title="Send Invoice"
+                              onClick={() => alert("Send invoice")}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="bg-green-100 hover:bg-green-200 text-green-700"
+                              title="Add Note"
+                              onClick={() => alert("Add note")}
+                            >
+                              <FilePlus className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="bg-pink-100 hover:bg-pink-200 text-pink-700"
+                              title="Apply Coupon"
+                              onClick={() => alert("Apply coupon")}
+                            >
+                              <Percent className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </TableCell>
+                        {/* Actions Cell */}
                         <TableCell className="text-right">
                           <OrderActions
                             onView={() => handleView(order)}
@@ -311,132 +415,16 @@ export default function Orders() {
                           />
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              title="Reminder"
-                              onClick={() => alert("Send reminder")}
-                            >
-                              <span className="sr-only">Reminder</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 17h6m-3-3v6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              title="Send Invoice"
-                              onClick={() => alert("Send invoice")}
-                            >
-                              <span className="sr-only">Send Invoice</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></svg>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              title="Add Note"
-                              onClick={() => alert("Add note")}
-                            >
-                              <span className="sr-only">Add Note</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h9"/></svg>
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              title="Apply Coupon"
-                              onClick={() => alert("Apply coupon")}
-                            >
-                              <span className="sr-only">Apply Coupon</span>
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="17" cy="7" r="1"/><circle cx="7" cy="17" r="1"/><line x1="6" x2="18" y1="18" y2="6"/></svg>
-                            </Button>
-                          </div>
+                          {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
                         </TableCell>
                       </TableRow>
                     ))
                   )}
                 </TableBody>
               </Table>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                {isLoading ? (
-                  Array.from({ length: 6 }).map((_, idx) => (
-                    <div key={idx} className="border rounded-lg p-4">
-                      <div className="space-y-3">
-                        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
-                        <div className="h-4 bg-gray-200 rounded w-full animate-pulse" />
-                        <div className="flex justify-between items-center pt-2">
-                          <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  paginatedOrders.map(order => (
-                    <div key={order.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium">{order.orderNumber}</h3>
-                        <OrderActions
-                          onView={() => handleView(order)}
-                          onEdit={() => handleEdit(order)}
-                          onSchedule={() => handleSchedule(order)}
-                          onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
-                          onChangeStatus={(s) => handleChangeStatus(order.id, s)}
-                          currentStatus={order.status}
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{order.propertyAddress}</p>
-                      <div className="flex justify-between items-center">
-                        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]}`}>
-                          {order.status.replace(/^\w/, c => c.toUpperCase())}
-                        </span>
-                        <span className="text-sm font-medium">
-                          ${order.cost.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex gap-2 justify-end mt-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title="Reminder"
-                          onClick={() => alert("Send reminder")}
-                        >
-                          <span className="sr-only">Reminder</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 17h6m-3-3v6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title="Send Invoice"
-                          onClick={() => alert("Send invoice")}
-                        >
-                          <span className="sr-only">Send Invoice</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></svg>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title="Add Note"
-                          onClick={() => alert("Add note")}
-                        >
-                          <span className="sr-only">Add Note</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h9"/></svg>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          title="Apply Coupon"
-                          onClick={() => alert("Apply coupon")}
-                        >
-                          <span className="sr-only">Apply Coupon</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="17" cy="7" r="1"/><circle cx="7" cy="17" r="1"/><line x1="6" x2="18" y1="18" y2="6"/></svg>
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+
           <div className="flex justify-between items-center mt-6">
             <Button
               onClick={() => setPage((p) => Math.max(1, p - 1))}

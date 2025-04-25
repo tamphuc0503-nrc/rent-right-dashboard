@@ -1,5 +1,4 @@
-
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SidebarItem } from '@/types/sidebar';
@@ -16,9 +15,26 @@ export function SidebarMenuItem({
   item, 
   isOpen, 
   expandedItem, 
-  onItemClick 
+  onItemClick,
+  currentPath
 }: SidebarMenuItemProps) {
   const isRecents = item.title === "Recents";
+  if (item.title === "Profile") {
+    return (
+      <li>
+        <Link
+          to="/dashboard/profile"
+          className={cn(
+            "flex items-center w-full px-2 py-3 rounded-md hover:bg-accent/50 transition-colors text-gray-700",
+            !isOpen && "justify-center"
+          )}
+        >
+          <item.icon className="h-5 w-5 text-gray-500" />
+          {isOpen && <span className="ml-3 font-medium flex-1 text-left">{item.title}</span>}
+        </Link>
+      </li>
+    );
+  }
   return (
     <li>
       <div className="relative">
@@ -48,7 +64,6 @@ export function SidebarMenuItem({
           <ul className="ml-6 mt-1 space-y-1">
             {item.subItems.map((subItem) => (
               <li key={subItem.title}>
-                {/* For recents, open in new tab */}
                 {isRecents ? (
                   <a
                     href={subItem.path}
