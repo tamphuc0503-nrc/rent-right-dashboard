@@ -225,7 +225,7 @@ export default function Orders() {
           {isLoading ? (
             <div>
               {isMobile ? (
-                Array.from({ length: 20 }).map((_, idx) => (
+                Array.from({ length: 12 }).map((_, idx) => (
                   <div className="bg-white rounded-lg p-4 shadow flex flex-col gap-3 animate-pulse mb-2" key={idx}>
                     <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
                     <div className="h-3 w-2/3 bg-gray-100 rounded"></div>
@@ -239,7 +239,7 @@ export default function Orders() {
                 <div className="rounded-md border bg-white shadow p-0 overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <tbody>
-                      {Array.from({ length: 20 }).map((_, rowIdx) => (
+                      {Array.from({ length: 12 }).map((_, rowIdx) => (
                         <tr key={rowIdx}>
                           {Array.from({ length: 7 }).map((_, colIdx) => (
                             <td key={colIdx} className="px-6 py-4">

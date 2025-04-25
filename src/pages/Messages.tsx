@@ -146,7 +146,7 @@ export default function Messages() {
           {isMobile ? (
             <div className="space-y-3">
               {skeleton
-                ? Array.from({ length: 20 }).map((_, i) => (
+                ? Array.from({ length: 12 }).map((_, i) => (
                     <div key={i} className="bg-white rounded-lg p-4 shadow flex flex-col gap-2 animate-pulse">
                       <div className="h-4 w-1/3 bg-gray-200 rounded"></div>
                       <div className="h-3 w-2/3 bg-gray-100 rounded"></div>
@@ -204,7 +204,7 @@ export default function Messages() {
             <div className="bg-white rounded-md border shadow p-0 overflow-x-auto">
               {skeleton ? (
                 <div className="p-6 space-y-2">
-                  {[...Array(20)].map((_, i) => (
+                  {[...Array(12)].map((_, i) => (
                     <div className="flex items-center gap-4" key={i}>
                       <Skeleton className="w-1/6 h-6" />
                       <Skeleton className="w-1/6 h-6" />
