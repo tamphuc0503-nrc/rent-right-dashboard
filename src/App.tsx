@@ -27,6 +27,8 @@ import Templates from "./pages/settings/Templates";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import Clients from "./pages/Clients";
+import Agents from "./pages/Agents";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +70,8 @@ const App = () => (
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/orders/:orderId" element={<OrderDetailPage />} />
             <Route path="/messages" element={<Messages />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/agents" element={<Agents />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

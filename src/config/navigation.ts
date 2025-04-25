@@ -2,7 +2,6 @@
 import {
   BarChart3,
   Users,
-  Building,
   UserCircle,
   Settings,
   ClipboardList,
@@ -13,7 +12,6 @@ import {
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
 
-// Dummy data for recents
 const DUMMY_RECENTS = [
   { title: "ORD-10005", path: "/orders/ORD-10005" },
   { title: "ORD-10043", path: "/orders/ORD-10043" },
@@ -22,7 +20,6 @@ const DUMMY_RECENTS = [
   { title: "ORD-10300", path: "/orders/ORD-10300" },
 ];
 
-// Generate recents based on actual user activity
 function getRecentsSubItems() {
   const ids = getRecentOrderIds();
   const seen = new Set();
@@ -36,7 +33,6 @@ function getRecentsSubItems() {
             return true;
           })
       : [];
-  // Fill to 5 if not enough recents yet
   const fullList = [...ordered];
   for (let item of DUMMY_RECENTS) {
     if (fullList.length >= 5) break;
@@ -48,7 +44,6 @@ function getRecentsSubItems() {
   return fullList.slice(0, 5);
 }
 
-// Add new Externals menu
 export const sidebarItems: SidebarItem[] = [
   {
     title: 'Dashboard',
@@ -81,13 +76,12 @@ export const sidebarItems: SidebarItem[] = [
     icon: Mail,
     path: '/messages',
   },
-  // New Externals group
   {
     title: "Externals",
     icon: Users,
     path: "",
     subItems: [
-      { title: "Companies", path: "/companies" },
+      // Removed Companies
       { title: "Clients", path: "/clients" },
       { title: "Agents", path: "/agents" },
     ],
@@ -105,4 +99,3 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
-
