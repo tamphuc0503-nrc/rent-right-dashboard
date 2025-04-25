@@ -18,6 +18,14 @@ const dummyInspectors = [
   { id: 6, name: 'Lisa Anderson', color: 'bg-orange-500' },
 ];
 
+function getDragEventData(e: React.DragEvent) {
+  try {
+    return JSON.parse(e.dataTransfer.getData('application/json'));
+  } catch {
+    return null;
+  }
+}
+
 const generateTimelineEvents = () => {
   const events = [];
   const startDate = new Date();
@@ -69,8 +77,43 @@ const generateWeekViewEvents = () => {
 };
 
 const TimelineView = () => {
-  const timelineEvents = generateTimelineEvents();
+  const [timelineEvents, setTimelineEvents] = useState(generateTimelineEvents());
   const days = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i));
+
+  function handleDragStart(e: React.DragEvent, inspectorIdx: number, eventIdx: number) {
+    e.dataTransfer.setData(
+      'application/json',
+      JSON.stringify({
+        fromInspector: inspectorIdx,
+        fromEventIdx: eventIdx,
+        type: 'timeline',
+      })
+    );
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDrop(e: React.DragEvent, inspectorIdx: number, date: Date) {
+    const data = getDragEventData(e);
+    if (!data || data.type !== 'timeline') return;
+    setTimelineEvents(prev => {
+      const prevEvents = [...prev];
+      const event = { ...prev[prevEvents[data.fromInspector].inspector.id - 1].events[data.fromEventIdx] };
+      const origStart = new Date(event.start);
+      const origEnd = new Date(event.end);
+      const newStart = new Date(date);
+      newStart.setHours(origStart.getHours(), origStart.getMinutes(), 0, 0);
+      const newEnd = new Date(date);
+      newEnd.setHours(origEnd.getHours(), origEnd.getMinutes(), 0, 0);
+
+      prevEvents[data.fromInspector].events.splice(data.fromEventIdx, 1);
+      prevEvents[inspectorIdx].events.push({
+        ...event,
+        start: newStart,
+        end: newEnd,
+      });
+      return prevEvents;
+    });
+  }
 
   return (
     <div className="border rounded-lg p-4 overflow-x-auto">
@@ -78,31 +121,36 @@ const TimelineView = () => {
         <div className="grid grid-cols-[200px_repeat(14,1fr)] gap-1">
           <div className="h-12 flex items-center font-semibold">Inspector</div>
           {days.map((day) => (
-            <div 
-              key={day.toISOString()} 
-              className="h-12 text-center border-l"
-            >
+            <div key={day.toISOString()} className="h-12 text-center border-l">
               <div className="text-sm font-medium">{format(day, 'EEE')}</div>
               <div className="text-xs">{format(day, 'MMM d')}</div>
             </div>
           ))}
-
-          {timelineEvents.map(({ inspector, events }) => (
+          {timelineEvents.map(({ inspector, events }, inspectorIdx) => (
             <React.Fragment key={inspector.id}>
               <div className="h-20 flex items-center px-2 font-medium">
                 {inspector.name}
               </div>
               {days.map((day) => (
-                <div key={day.toISOString()} className="h-20 border-l relative">
+                <div
+                  key={day.toISOString()}
+                  className="h-20 border-l relative"
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => handleDrop(e, inspectorIdx, day)}
+                  style={{ minHeight: 48, minWidth: 48 }}
+                >
                   {events
-                    .filter(event => 
+                    .filter(event =>
                       format(event.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
                     )
-                    .map(event => (
+                    .map((event, eventIdx) => (
                       <div
                         key={event.id}
-                        className={`absolute top-2 left-1 right-1 p-1 text-xs text-white rounded ${inspector.color}`}
+                        className={`absolute top-2 left-1 right-1 p-1 text-xs text-white rounded cursor-grab ${inspector.color}`}
                         title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
+                        draggable
+                        onDragStart={e => handleDragStart(e, inspectorIdx, events.indexOf(event))}
+                        style={{ zIndex: 2 }}
                       >
                         {format(event.start, 'HH:mm')} {event.title}
                       </div>
@@ -118,9 +166,40 @@ const TimelineView = () => {
 };
 
 const WeekViewCalendar = () => {
-  const events = generateWeekViewEvents();
+  const [events, setEvents] = useState(generateWeekViewEvents());
   const hours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 8 PM
   const days = Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(new Date()), i));
+
+  function handleDragStart(e: React.DragEvent, eventId: string) {
+    e.dataTransfer.setData(
+      'application/json',
+      JSON.stringify({
+        eventId,
+        type: 'week',
+      })
+    );
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  function handleDrop(e: React.DragEvent, day: Date, hour: number) {
+    const data = getDragEventData(e);
+    if (!data || data.type !== 'week') return;
+    setEvents(prev => {
+      const idx = prev.findIndex(ev => ev.id === data.eventId);
+      if (idx === -1) return prev;
+      const event = { ...prev[idx] };
+      const origDuration = (new Date(event.end).getHours() - new Date(event.start).getHours());
+      const start = new Date(day);
+      start.setHours(hour, 0, 0, 0);
+      const end = new Date(day);
+      end.setHours(hour + origDuration, 0, 0, 0);
+      event.start = start.getTime();
+      event.end = end.getTime();
+      const updated = [...prev];
+      updated[idx] = event;
+      return updated;
+    });
+  }
 
   return (
     <div className="h-[600px] border rounded-lg p-4 overflow-auto">
@@ -134,27 +213,33 @@ const WeekViewCalendar = () => {
             </div>
           ))}
         </div>
-
         {hours.map(hour => (
           <div key={hour} className="grid grid-cols-[100px_repeat(7,1fr)] border-b">
             <div className="p-2 text-sm">{format(new Date().setHours(hour), 'ha')}</div>
             {days.map(day => {
               const currentSlotStart = day.setHours(hour, 0, 0, 0);
               const currentSlotEnd = day.setHours(hour + 1, 0, 0, 0);
-              const slotEvents = events.filter(event => 
+              const slotEvents = events.filter(event =>
                 event.start >= currentSlotStart && event.start < currentSlotEnd
               );
-
               return (
-                <div key={`${day.toISOString()}-${hour}`} className="border-l p-1 min-h-[60px] relative">
+                <div
+                  key={`${day.toISOString()}-${hour}`}
+                  className="border-l p-1 min-h-[60px] relative"
+                  onDragOver={e => e.preventDefault()}
+                  onDrop={e => handleDrop(e, new Date(day), hour)}
+                  style={{ minHeight: 48 }}
+                >
                   {slotEvents.map(event => (
                     <div
                       key={event.id}
-                      className={`absolute top-0 left-1 right-1 p-1 text-xs text-white rounded ${event.color}`}
+                      className={`absolute top-0 left-1 right-1 p-1 text-xs text-white rounded cursor-grab ${event.color}`}
                       style={{
                         height: `${(new Date(event.end).getHours() - new Date(event.start).getHours()) * 60}px`
                       }}
                       title={`${format(event.start, 'HH:mm')} - ${format(event.end, 'HH:mm')}: ${event.title}`}
+                      draggable
+                      onDragStart={e => handleDragStart(e, event.id)}
                     >
                       <div className="truncate">{event.title}</div>
                       <div className="text-xs opacity-90">{event.inspector}</div>

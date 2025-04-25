@@ -108,7 +108,9 @@ export default function OrdersTable({
                       title="Reminder"
                       onClick={() => alert("Send reminder")}
                     >
-                      <Bell className="h-4 w-4" />
+                      <span className="group-hover:animate-shake">
+                        <Bell className="h-4 w-4" />
+                      </span>
                     </Button>
                     <Button
                       size="sm"
@@ -117,7 +119,9 @@ export default function OrdersTable({
                       title="Send Invoice"
                       onClick={() => alert("Send invoice")}
                     >
-                      <Send className="h-4 w-4" />
+                      <span className="group-hover:animate-shake">
+                        <Send className="h-4 w-4" />
+                      </span>
                     </Button>
                     <Button
                       size="sm"
@@ -126,7 +130,9 @@ export default function OrdersTable({
                       title="Add Note"
                       onClick={() => alert("Add note")}
                     >
-                      <FilePlus className="h-4 w-4" />
+                      <span className="group-hover:animate-shake">
+                        <FilePlus className="h-4 w-4" />
+                      </span>
                     </Button>
                     <Button
                       size="sm"
@@ -135,7 +141,9 @@ export default function OrdersTable({
                       title="Apply Coupon"
                       onClick={() => alert("Apply coupon")}
                     >
-                      <Percent className="h-4 w-4" />
+                      <span className="group-hover:animate-shake">
+                        <Percent className="h-4 w-4" />
+                      </span>
                     </Button>
                   </div>
                 </TableCell>
