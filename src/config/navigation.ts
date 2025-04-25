@@ -32,6 +32,11 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    title: 'My Notifications',
+    icon: Bell,
+    path: '/notifications',
+  },
+  {
     title: 'Inspectors',
     icon: UserCircle,
     path: '/inspectors',
