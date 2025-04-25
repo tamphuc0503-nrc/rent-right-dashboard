@@ -93,7 +93,7 @@ export default function OrderDetailPage() {
       <Sidebar isMobile={isMobile} />
       <div className={`flex-1 ${isMobile ? '' : 'ml-[var(--sidebar-width,256px)]'}`}>
         <DashboardHeader />
-        <main className="p-6 max-w-3xl mx-auto">
+        <main className="p-6 max-w-6xl mx-auto">
           <div className="mb-6 flex items-start gap-3">
             <h1 className="text-2xl font-bold text-gray-900 flex-1">
               Order {order.orderNumber}

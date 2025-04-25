@@ -271,13 +271,14 @@ export default function Orders() {
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Cost</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-right">Quick Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, idx) => (
                       <TableRow key={idx}>
-                        {Array.from({ length: 7 }).map((_, cellIdx) => (
+                        {Array.from({ length: 8 }).map((_, cellIdx) => (
                           <TableCell key={cellIdx}>
                             <div className="h-4 bg-gray-200 rounded animate-pulse" />
                           </TableCell>
@@ -308,6 +309,46 @@ export default function Orders() {
                             onChangeStatus={(s) => handleChangeStatus(order.id, s)}
                             currentStatus={order.status}
                           />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title="Reminder"
+                              onClick={() => alert("Send reminder")}
+                            >
+                              <span className="sr-only">Reminder</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 17h6m-3-3v6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title="Send Invoice"
+                              onClick={() => alert("Send invoice")}
+                            >
+                              <span className="sr-only">Send Invoice</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></svg>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title="Add Note"
+                              onClick={() => alert("Add note")}
+                            >
+                              <span className="sr-only">Add Note</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h9"/></svg>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              title="Apply Coupon"
+                              onClick={() => alert("Apply coupon")}
+                            >
+                              <span className="sr-only">Apply Coupon</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="17" cy="7" r="1"/><circle cx="7" cy="17" r="1"/><line x1="6" x2="18" y1="18" y2="6"/></svg>
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -351,6 +392,44 @@ export default function Orders() {
                         <span className="text-sm font-medium">
                           ${order.cost.toLocaleString()}
                         </span>
+                      </div>
+                      <div className="flex gap-2 justify-end mt-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Reminder"
+                          onClick={() => alert("Send reminder")}
+                        >
+                          <span className="sr-only">Reminder</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 17h6m-3-3v6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Send Invoice"
+                          onClick={() => alert("Send invoice")}
+                        >
+                          <span className="sr-only">Send Invoice</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></svg>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Add Note"
+                          onClick={() => alert("Add note")}
+                        >
+                          <span className="sr-only">Add Note</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 15V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h9"/></svg>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Apply Coupon"
+                          onClick={() => alert("Apply coupon")}
+                        >
+                          <span className="sr-only">Apply Coupon</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="17" cy="7" r="1"/><circle cx="7" cy="17" r="1"/><line x1="6" x2="18" y1="18" y2="6"/></svg>
+                        </Button>
                       </div>
                     </div>
                   ))

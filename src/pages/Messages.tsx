@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -118,7 +117,7 @@ export default function Messages() {
       <Sidebar isMobile={isMobile} />
       <div className={`flex-1 ${isMobile ? '' : 'ml-[var(--sidebar-width,256px)]'}`}>
         <DashboardHeader />
-        <main className="p-6 max-w-5xl mx-auto">
+        <main className="p-6 max-w-6xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-900 mb-5">
             My Messages
           </h1>
