@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import Header from '@/components/Header';
 import { toast } from 'sonner';
-
-const DUMMY_API_URL = "https://jsonplaceholder.typicode.com/posts"; // Using dummy url
+import { apiClient, type AuthResponse } from '@/lib/api-client';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -18,44 +16,24 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Helper to simulate a token response regardless of payload
-  async function signInApiRequest() {
-    // Simulate network latency with a delay
-    await new Promise((res) => setTimeout(res, 600));
-    // We'll always "fetch", but then ignore the network result and return static
-    return {
-      success: true,
-      data: {
-        access_token: "dummy-token-x123",
-        expires_date: new Date(Date.now() + 86400000).toISOString(), // 1 day from now
-        refresh_token: "dummy-refresh-y789",
-      }
-    }
-  }
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
     try {
-      if (email && password) {
-        // Simulate API call
-        const response = await signInApiRequest();
+      const authData = await apiClient<AuthResponse>('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
 
-        if (response.success && response.data) {
-          const { access_token, expires_date, refresh_token } = response.data;
-          localStorage.setItem('access_token', access_token);
-          localStorage.setItem('expires_date', expires_date);
-          localStorage.setItem('refresh_token', refresh_token);
-          toast.success('Successfully signed in!');
-          navigate('/dashboard');
-        } else {
-          toast.error('Invalid credentials');
-        }
-      } else {
-        toast.error('Please enter both email and password');
+      if (authData) {
+        const { access_token, refresh_token, user } = authData;
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem('user', JSON.stringify(user));
+        toast.success('Successfully signed in!');
+        navigate('/dashboard');
       }
-    } catch (err) {
-      toast.error('Something went wrong during sign in');
     } finally {
       setIsLoading(false);
     }
