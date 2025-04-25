@@ -1,9 +1,9 @@
+
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
-import OrdersTimeline from "@/components/orders/OrdersTimeline";
 import {
   Table,
   TableHeader,
@@ -12,54 +12,68 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { format, addDays } from 'date-fns';
-import { Eye, Calendar as CalendarIcon, List as ListIcon } from "lucide-react";
+import { format, addDays, startOfWeek } from 'date-fns';
+import { Calendar as CalendarIcon, List as ListIcon } from "lucide-react";
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import OrdersWeekView, { WeekViewOrder } from '@/components/orders/OrdersWeekView';
 
-function getDummyOrders(timelineStart: Date, timelineEnd: Date) {
-  const days = [];
-  let cur = new Date(timelineStart);
-  while (cur <= timelineEnd) {
-    days.push(new Date(cur));
-    cur.setDate(cur.getDate() + 1);
-  }
-  const orders = [];
-  days.forEach((day, i) => {
-    for (let j = 0; j < 2; j++) {
-      const inspectionHour = j === 0 ? 9 : 14;
-      const dateObj = new Date(day);
-      dateObj.setHours(inspectionHour, 0, 0, 0);
+// --- Helper: generate random 0-2 orders per day with times that may overlap ---
+function generateRandomOrdersForWeek(start: Date) {
+  const orders: WeekViewOrder[] = [];
+  const names = ["John Doe", "Alice Smith", "Harry Lee", "Betty Tran", "Kay Kim"];
+  const types = ["Home Inspection", "Property Assessment", "Mold Testing"];
+  for (let i = 0; i < 7; i++) {
+    // 0, 1, or 2 orders/day
+    const num = Math.floor(Math.random() * 3);
+    const day = addDays(start, i);
+    for (let j = 0; j < num; j++) {
+      // Random start between 08:00 and 16:59, duration 1-3 hr, never past 20:00
+      const startHour = 8 + Math.floor(Math.random() * 8); // 8-15
+      const startMin = Math.random() < 0.5 ? 0 : 30;
+      let duration = 1 + Math.floor(Math.random() * 3);
+      if (startHour + duration > 20) duration = 20 - startHour;
+      const sH = startHour.toString().padStart(2, "0");
+      const sM = startMin.toString().padStart(2, "0");
+      const eH = (startHour + duration).toString().padStart(2, "0");
+      const eM = sM;
+      const dateStr = format(day, "yyyy-MM-dd");
       orders.push({
-        id: `ORD-${format(dateObj, "yyyyMMdd")}-${j + 1}`,
-        date: format(dateObj, 'yyyy-MM-dd'),
-        address: `${1000 + i * 2 + j} Oak Street, City ${i + 1}`,
-        clientName: `Client ${i + 1}-${j + 1}`,
-        status: (i + j) % 3 === 0 ? "scheduled" : (j % 3 === 1 ? "completed" : "pending"),
-        inspectorName: `Inspector ${j === 0 ? "John" : "Sarah"}`,
-        orderType: j % 2 === 0 ? "Home Inspection" : "Property Assessment",
-        time: format(dateObj, "HH:mm"),
-        timeObj: new Date(dateObj),
+        id: `ORD-${dateStr}-${j + 1}-${Math.floor(Math.random() * 10000)}`,
+        date: dateStr,
+        address: `${1000 + i * 20 + j * 5} Main Street, City ${i + 1}`,
+        clientName: names[(i + j) % names.length],
+        status: ["scheduled", "completed", "pending"][Math.floor(Math.random() * 3)],
+        inspectorName: names[(i + j + 1) % names.length],
+        orderType: types[j % types.length],
+        startTime: `${sH}:${sM}`,
+        endTime: `${eH}:${eM}`,
       });
     }
-  });
+  }
   return orders;
 }
 
 export default function MyUpcomingOrders() {
   const isMobile = useIsMobile();
+  const [mode, setMode] = useState<"list" | "week">("list");
+  const [weekStart, setWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 })); // Monday
+  const [orders, setOrders] = useState<WeekViewOrder[]>(() => generateRandomOrdersForWeek(weekStart));
+  const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
+
+  // Regenerate for different week
+  const handleWeekChange = (date: Date | undefined) => {
+    if (date) {
+      const monday = startOfWeek(date, { weekStartsOn: 1 });
+      setWeekStart(monday);
+      setOrders(generateRandomOrdersForWeek(monday));
+    }
+  };
+
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mode, setMode] = useState<"list" | "timeline">("list");
-
-  const [timelineStart, setTimelineStart] = useState<Date>(new Date());
-  const [timelineEnd, setTimelineEnd] = useState<Date>(addDays(new Date(), 6));
-  const [isStartPickerOpen, setIsStartPickerOpen] = useState(false);
-  const [isEndPickerOpen, setIsEndPickerOpen] = useState(false);
-
-  const orders = getDummyOrders(timelineStart, timelineEnd);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -81,11 +95,11 @@ export default function MyUpcomingOrders() {
                 <ListIcon className="h-4 w-4 mr-1" /> List View
               </Button>
               <Button
-                variant={mode === 'timeline' ? 'default' : 'ghost'}
-                onClick={() => setMode('timeline')}
+                variant={mode === 'week' ? 'default' : 'ghost'}
+                onClick={() => setMode('week')}
                 size="sm"
               >
-                <CalendarIcon className="h-4 w-4 mr-1" /> Timeline View
+                <CalendarIcon className="h-4 w-4 mr-1" /> Week View
               </Button>
             </div>
           </div>
@@ -106,7 +120,7 @@ export default function MyUpcomingOrders() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((order) => (
+                  {orders.map((order, idx) => (
                     <TableRow key={order.id}>
                       <TableCell>{order.id}</TableCell>
                       <TableCell>{order.date}</TableCell>
@@ -132,7 +146,6 @@ export default function MyUpcomingOrders() {
                             setIsModalOpen(true);
                           }}
                         >
-                          <Eye className="h-4 w-4 mr-1" />
                           View
                         </Button>
                       </TableCell>
@@ -142,70 +155,30 @@ export default function MyUpcomingOrders() {
               </Table>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="flex flex-col md:flex-row gap-2 md:items-center mb-4">
-                <span className="text-sm text-gray-700 font-semibold mr-2">Show timeline from:</span>
+            <div>
+              <div className="flex gap-3 mb-4 items-center">
+                <span className="text-sm text-gray-700 font-semibold">Showing week of:</span>
                 <Popover open={isStartPickerOpen} onOpenChange={setIsStartPickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={cn("justify-start", !timelineStart && "text-muted-foreground")}
+                      className={cn("justify-start")}
                     >
                       <CalendarIcon className="h-4 w-4 mr-1" />
-                      {timelineStart ? format(timelineStart, "PPP") : <span>Start Date</span>}
+                      {weekStart ? format(weekStart, "PPP") : <span>Pick a week</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={timelineStart}
-                      onSelect={(date) => {
-                        if (date) {
-                          setTimelineStart(date);
-                          if (date > timelineEnd) setTimelineEnd(date);
-                        }
-                        setIsStartPickerOpen(false);
-                      }}
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <span className="px-2 text-gray-400">to</span>
-                <Popover open={isEndPickerOpen} onOpenChange={setIsEndPickerOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn("justify-start", !timelineEnd && "text-muted-foreground")}
-                    >
-                      <CalendarIcon className="h-4 w-4 mr-1" />
-                      {timelineEnd ? format(timelineEnd, "PPP") : <span>End Date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={timelineEnd}
-                      onSelect={(date) => {
-                        if (date) {
-                          setTimelineEnd(date);
-                          if (date < timelineStart) setTimelineStart(date);
-                        }
-                        setIsEndPickerOpen(false);
-                      }}
+                      selected={weekStart}
+                      onSelect={handleWeekChange}
                       className="p-3 pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
               </div>
-              <OrdersTimeline
-                orders={orders}
-                start={timelineStart}
-                end={timelineEnd}
-                onOrderClick={(order) => {
-                  setSelectedOrder(order);
-                  setIsModalOpen(true);
-                }}
-              />
+              <OrdersWeekView weekStart={weekStart} orders={orders} />
             </div>
           )}
 
