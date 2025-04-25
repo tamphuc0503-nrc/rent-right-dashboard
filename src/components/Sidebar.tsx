@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
@@ -5,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSidebarNavigation } from '@/hooks/use-sidebar-navigation';
 import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
-import { SidebarProfile } from './sidebar/SidebarProfile';
 import { sidebarItems } from '@/config/navigation';
 import SettingsPanel from "@/components/settings/SettingsPanel";
+import ClientsPanel from "@/components/clients/ClientsPanel";
 
 type SidebarProps = {
   isMobile?: boolean;
@@ -17,23 +18,24 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const { isOpen, expandedItems, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState<undefined | string>(undefined);
+  const [clientsPanelOpen, setClientsPanelOpen] = useState(false);
 
-  const handleSidebarItemClick = (item: SidebarItem) => {
+  const handleSidebarItemClick = (item: any) => {
     if (item.title === "Settings") {
       setSettingsOpen(true);
       setSettingsTab("general");
-    } else if (item.title === "Settings" && item.subItems?.length && item.subItems[0].path) {
-      setSettingsTab(item.subItems[0].path);
-      setSettingsOpen(true);
     } else {
       handleParentItemClick(item);
     }
   };
 
-  const handleSidebarSubMenuClick = (item: SidebarItem, subItem: { title: string; path: string }) => {
+  const handleSidebarSubMenuClick = (item: any, subItem: { title: string; path: string }) => {
     if (item.title === "Settings") {
       setSettingsTab(subItem.path);
       setSettingsOpen(true);
+    }
+    if (item.title === "Externals" && subItem.title === "Clients") {
+      setClientsPanelOpen(true);
     }
   };
 
@@ -92,6 +94,10 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
         open={settingsOpen}
         initialTab={settingsTab}
         onClose={() => setSettingsOpen(false)}
+      />
+      <ClientsPanel
+        open={clientsPanelOpen}
+        onClose={() => setClientsPanelOpen(false)}
       />
     </>
   );

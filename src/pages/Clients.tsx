@@ -4,7 +4,11 @@ import { Input } from "@/components/ui/input";
 import { clients } from "@/data/clients";
 import { Filter } from "lucide-react";
 
-const DummyClientList = () => {
+type DummyClientListProps = {
+  noTitle?: boolean;
+};
+
+const DummyClientList = ({ noTitle = false }: DummyClientListProps) => {
   const [search, setSearch] = useState("");
   const filtered = clients.filter(
     c =>
@@ -14,7 +18,7 @@ const DummyClientList = () => {
   );
   return (
     <div className="max-w-2xl mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-4">Clients</h1>
+      {!noTitle && <h1 className="text-2xl font-bold mb-4">Clients</h1>}
       <div className="flex items-center gap-3 mb-4">
         <Input
           placeholder="Search clients..."

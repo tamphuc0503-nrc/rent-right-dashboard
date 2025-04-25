@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,6 +11,7 @@ type SidebarMenuItemProps = {
   expandedItems: string[];
   currentPath: string;
   onItemClick: (item: SidebarItem) => void;
+  onSubMenuClick?: (item: SidebarItem, subItem: { title: string; path: string }) => void;
 };
 
 export function SidebarMenuItem({
@@ -19,9 +21,7 @@ export function SidebarMenuItem({
   onItemClick,
   currentPath,
   onSubMenuClick,
-}: SidebarMenuItemProps & { onSubMenuClick?: (item: SidebarItem, subItem: { title: string; path: string }) => void }) {
-  const isRecents = item.title === "Recents";
-  const isSettings = item.title === "Settings";
+}: SidebarMenuItemProps) {
   const isParentActive = !!item.subItems && item.subItems.some(sub => sub.path === currentPath);
   const isThisActive = !item.subItems && currentPath === item.path;
   const isExpanded = expandedItems.includes(item.title);
@@ -31,11 +31,7 @@ export function SidebarMenuItem({
       <div className="relative">
         <button
           onClick={() => {
-            if (item.subItems && item.subItems.length > 0) {
-              onItemClick(item);
-            } else {
-              onItemClick(item);
-            }
+            onItemClick(item);
           }}
           className={cn(
             "flex items-center w-full px-2 py-3 rounded-md hover:bg-accent/50 transition-colors text-gray-700",
@@ -67,7 +63,10 @@ export function SidebarMenuItem({
                     "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600 w-full text-left"
                   )}
                   onClick={() => {
-                    if (onSubMenuClick) {
+                    // If Externals > Clients, prevent navigation and call submenu handler
+                    if (item.title === "Externals" && subItem.title === "Clients" && onSubMenuClick) {
+                      onSubMenuClick(item, subItem);
+                    } else if (onSubMenuClick) {
                       onSubMenuClick(item, subItem);
                     }
                   }}
