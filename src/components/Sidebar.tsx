@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
@@ -14,7 +13,7 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ isMobile = false }: SidebarProps) => {
-  const { isOpen, expandedItem, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
+  const { isOpen, expandedItems, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
 
   return (
     <>
@@ -50,7 +49,6 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
             </Button>
           )}
         </div>
-
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-2">
             {sidebarItems.map((item) => (
@@ -58,14 +56,13 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                 key={item.title}
                 item={item}
                 isOpen={isOpen}
-                expandedItem={expandedItem}
+                expandedItems={expandedItems}
                 currentPath={location.pathname}
                 onItemClick={handleParentItemClick}
               />
             ))}
           </ul>
         </nav>
-
         <SidebarProfile isOpen={isOpen} />
       </aside>
     </>
