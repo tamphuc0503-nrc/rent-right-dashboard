@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, Archive, Send, Calendar as CalendarIcon, Search } from "lucide-react";
 import { format } from "date-fns";
 import ViewMessageModal from "@/components/ViewMessageModal";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 type Message = {
   id: string;
@@ -143,6 +144,7 @@ export default function Messages() {
               </div>
             </div>
           </div>
+          <TooltipProvider>
           {isMobile ? (
             <div className="space-y-3">
               {skeleton
@@ -168,33 +170,57 @@ export default function Messages() {
                       <div className="text-xs text-gray-400">{format(new Date(m.sentDate), "yyyy-MM-dd")}</div>
                       <div className="truncate text-gray-700">{m.content}</div>
                       <div className="flex gap-1 mt-2">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                          title="View"
-                          onClick={() => setViewMessage(m)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-600"
-                          title="Resend"
-                          onClick={() => alert("Resend clicked")}
-                        >
-                          <Send className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="bg-orange-100 hover:bg-orange-200 text-orange-700"
-                          title="Archive"
-                          onClick={() => alert("Archive clicked")}
-                        >
-                          <Archive className="h-4 w-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                              title="View"
+                              onClick={() => setViewMessage(m)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" sideOffset={5}>
+                            View
+                            <div data-radix-tooltip-arrow="" className="bg-black" />
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-600"
+                              title="Resend"
+                              onClick={() => alert("Resend clicked")}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" sideOffset={5}>
+                            Resend
+                            <div data-radix-tooltip-arrow="" className="bg-black" />
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="bg-orange-100 hover:bg-orange-200 text-orange-700"
+                              title="Archive"
+                              onClick={() => alert("Archive clicked")}
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" sideOffset={5}>
+                            Archive
+                            <div data-radix-tooltip-arrow="" className="bg-black" />
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))
@@ -247,33 +273,57 @@ export default function Messages() {
                           <TableCell>{m.templateName}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                                onClick={() => setViewMessage(m)}
-                                title="View"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-600"
-                                onClick={() => alert("Resend clicked")}
-                                title="Resend"
-                              >
-                                <Send className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="bg-orange-100 hover:bg-orange-200 text-orange-700"
-                                onClick={() => alert("Archive clicked")}
-                                title="Archive"
-                              >
-                                <Archive className="h-4 w-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                                    onClick={() => setViewMessage(m)}
+                                    title="View"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" sideOffset={5}>
+                                  View
+                                  <div data-radix-tooltip-arrow="" className="bg-black" />
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="bg-fuchsia-100 hover:bg-fuchsia-200 text-fuchsia-600"
+                                    onClick={() => alert("Resend clicked")}
+                                    title="Resend"
+                                  >
+                                    <Send className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" sideOffset={5}>
+                                  Resend
+                                  <div data-radix-tooltip-arrow="" className="bg-black" />
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="bg-orange-100 hover:bg-orange-200 text-orange-700"
+                                    onClick={() => alert("Archive clicked")}
+                                    title="Archive"
+                                  >
+                                    <Archive className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" sideOffset={5}>
+                                  Archive
+                                  <div data-radix-tooltip-arrow="" className="bg-black" />
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -284,6 +334,7 @@ export default function Messages() {
               )}
             </div>
           )}
+          </TooltipProvider>
           {viewMessage && (
             <ViewMessageModal
               message={viewMessage}
