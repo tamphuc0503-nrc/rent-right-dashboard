@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   Users,
@@ -7,19 +8,12 @@ import {
   Building,
   UserCircle,
   Settings,
-  CreditCard,
   Menu,
   X,
   ClipboardList,
-  Plus,
   Calendar,
   ChevronDown,
   ChevronRight,
-  Mail,
-  Send,
-  FileText,
-  Tag,
-  Printer
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -84,11 +78,35 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const [isOpen, setIsOpen] = useState(!isMobile);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
     document.documentElement.style.setProperty('--sidebar-width', isOpen ? '80px' : '256px');
   };
+
+  const handleParentItemClick = (item: SidebarItem) => {
+    if (item.subItems && item.subItems.length > 0) {
+      setExpandedItem(expandedItem === item.title ? null : item.title);
+      if (expandedItem !== item.title) {
+        // Navigate to first sub-item when expanding
+        navigate(item.subItems[0].path);
+      }
+    } else {
+      navigate(item.path);
+    }
+  };
+
+  useEffect(() => {
+    // Find and expand parent menu based on current path
+    const currentPath = location.pathname;
+    const parentItem = sidebarItems.find(item => 
+      item.subItems?.some(subItem => subItem.path === currentPath)
+    );
+    if (parentItem) {
+      setExpandedItem(parentItem.title);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-width', isOpen ? '256px' : '80px');
@@ -137,11 +155,14 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
             {sidebarItems.map((item) => (
               <li key={item.title}>
                 <div className="relative">
-                  <Link
-                    to={item.path}
+                  <button
+                    onClick={() => handleParentItemClick(item)}
                     className={cn(
-                      "flex items-center px-2 py-3 rounded-md hover:bg-accent transition-colors",
-                      location.pathname === item.path ? "bg-accent text-accent-foreground" : "text-gray-700",
+                      "flex items-center w-full px-2 py-3 rounded-md hover:bg-accent transition-colors",
+                      (location.pathname === item.path || 
+                       item.subItems?.some(subItem => subItem.path === location.pathname)) 
+                        ? "bg-accent text-accent-foreground" 
+                        : "text-gray-700",
                       !isOpen && "justify-center"
                     )}
                   >
@@ -161,7 +182,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
                         )}
                       </>
                     )}
-                  </Link>
+                  </button>
                   
                   {isOpen && item.subItems && expandedItem === item.title && (
                     <ul className="ml-6 mt-1 space-y-1">
