@@ -124,19 +124,74 @@
 /* Custom, rounded and slim sidebar scrollbar styling */
 .styled-scrollbar {
   scrollbar-color: #e5e7eb #ffffff;
-  scrollbar-width: thin;
+  scrollbar-width: 12px;
 }
 
-/* Chrome/Edge/Safari */
-.styled-scrollbar::-webkit-scrollbar {
-  width: 6px; /* About 3/5 standard */
-  border-radius: 3px;
+/* Chrome/Edge/Safari and most Webkit */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 6px;
+  min-height: 24px;
+  min-width: 24px;
+}
+
+::-webkit-scrollbar-corner {
   background: #f9fafb;
 }
 
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb #f9fafb;
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background: #f9fafb;
+}
 .styled-scrollbar::-webkit-scrollbar-thumb {
   background: #e5e7eb;
-  border-radius: 3px;
+  border-radius: 6px;
+}
+
+/* Ensure all scrollable tabs and content get the bigger scrollbar */
+[data-radix-scroll-area-viewport],
+[data-radix-tabs-content],
+.scroll-area,
+.tabs-content {
+  scrollbar-width: 12px;
+}
+
+[data-radix-scroll-area-viewport]::-webkit-scrollbar,
+[data-radix-tabs-content]::-webkit-scrollbar,
+.scroll-area::-webkit-scrollbar,
+.tabs-content::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+[data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb,
+[data-radix-tabs-content]::-webkit-scrollbar-thumb,
+.scroll-area::-webkit-scrollbar-thumb,
+.tabs-content::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 6px;
+}
+
+[data-radix-scroll-area-viewport]::-webkit-scrollbar-corner,
+[data-radix-tabs-content]::-webkit-scrollbar-corner,
+.scroll-area::-webkit-scrollbar-corner,
+.tabs-content::-webkit-scrollbar-corner {
+  background: #f9fafb;
 }
 
 /* For quick action black tooltip */
