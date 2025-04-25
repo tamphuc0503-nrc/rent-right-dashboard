@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Users, Eye } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableHeader,
@@ -17,31 +19,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useToast } from "@/hooks/use-toast";
 import clsx from "clsx";
 import AddInspectorDialog from '@/components/AddInspectorDialog';
-
-function getDummyInspectors() {
-  const companies = ["HomeCheck LLC", "SafeNest", "InspectoPro", "QuickHouse", "PrimeInspections"];
-  return Array.from({ length: 60 }).map((_, i) => {
-    const comp = companies[i % companies.length];
-    return {
-      id: i + 1,
-      name: `Inspector ${i + 1}`,
-      email: `inspector${i + 1}@${comp.toLowerCase().replace(/\s/g, '')}.com`,
-      phone: `0812${String(40000000 + i).slice(-8)}`,
-      company: comp,
-      status: i % 4 === 0 ? "de-active" : "active",
-      point: (i % 5) + 1,
-      wip: i % 2 === 0 ? "inspecting" : "non-schedule",
-      address: `${300 + i} 2nd Ave, Cityville`,
-      tags: ["roof", "electric", "plumbing"].filter((_, idx) => (idx + i) % 2 === 0),
-      notes: "Very detail oriented. Great with customers.",
-      housesInspected: Array.from({ length: Math.floor(2 + Math.random() * 8) }, (_, h) => ({
-        id: i * 100 + h,
-        address: `${10 + h} Maple St, Historycity`,
-        date: `2024-0${(h%9)+1}-12`,
-      })),
-    }
-  });
-}
+import { apiClient } from '@/lib/api-client';
+import type { Inspector } from '@/types/inspector';
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-green-100 text-green-600",
@@ -52,12 +31,16 @@ const INSPECTORS_PER_PAGE = 10;
 
 const Inspectors = () => {
   const isMobile = useIsMobile();
-  const [inspectors] = useState(() => getDummyInspectors());
-  const [selected, setSelected] = useState<typeof inspectors[0] | null>(null);
+  const [selected, setSelected] = useState<Inspector | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
+  
+  const { data: inspectors = [], isLoading, refetch } = useQuery({
+    queryKey: ['inspectors'],
+    queryFn: () => apiClient<Inspector[]>('/api/inspectors'),
+  });
   
   // Pagination state
   const [page, setPage] = useState(1);
@@ -68,7 +51,7 @@ const Inspectors = () => {
       inspector.email.toLowerCase().includes(q) ||
       inspector.phone.toLowerCase().includes(q) ||
       inspector.status.toLowerCase().includes(q) ||
-      inspector.wip.toLowerCase().includes(q)
+      inspector.inspectionStatus.toLowerCase().includes(q)
     );
   });
   
@@ -82,20 +65,27 @@ const Inspectors = () => {
     setPage(1);
   };
 
-  const handleAddInspector = (data: any) => {
-    console.log('New inspector data:', data);
-    toast({
-      title: "Inspector Added",
-      description: "The inspector has been successfully added.",
+  const handleAddInspector = async (data: any) => {
+    const response = await apiClient<Inspector>('/api/inspectors', {
+      method: 'POST',
+      body: JSON.stringify(data)
     });
-    setIsAddDialogOpen(false);
+    
+    if (response) {
+      toast({
+        title: "Inspector Added",
+        description: "The inspector has been successfully added.",
+      });
+      setIsAddDialogOpen(false);
+      refetch(); // Reload the inspectors list
+    }
   };
 
   const handleAddClick = () => {
     setIsAddDialogOpen(true);
   };
 
-  const openDialog = (inspector: typeof inspectors[0]) => {
+  const openDialog = (inspector: Inspector) => {
     setSelected(inspector);
     setIsOpen(true);
   };
@@ -138,7 +128,18 @@ const Inspectors = () => {
           </div>
           
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {paginatedInspectors.length === 0 ? (
+            {isLoading ? (
+              <div className="p-4 space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-4 w-[250px]" />
+                    <Skeleton className="h-4 w-[200px]" />
+                    <Skeleton className="h-4 w-[150px]" />
+                    <Skeleton className="h-4 w-[100px]" />
+                  </div>
+                ))}
+              </div>
+            ) : paginatedInspectors.length === 0 ? (
               <div className="p-6 flex items-center justify-center text-gray-500">
                 <span>No inspectors found.</span>
               </div>
@@ -167,15 +168,15 @@ const Inspectors = () => {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="inline-block font-semibold">{inspector.point}</span>
+                        <span className="inline-block font-semibold">{inspector.points}</span>
                         <span className="ml-1 text-yellow-400">★</span>
                       </TableCell>
                       <TableCell>
                         <span className={clsx(
                           "px-2 py-1 rounded text-xs font-semibold",
-                          inspector.wip === "inspecting" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                          inspector.inspectionStatus === "inspecting" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
                         )}>
-                          {inspector.wip}
+                          {inspector.inspectionStatus}
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
@@ -220,49 +221,6 @@ const Inspectors = () => {
           </div>
         </main>
       </div>
-      
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Inspector Information</DialogTitle>
-            <DialogDescription>
-              Detailed inspector info and inspection history.
-            </DialogDescription>
-          </DialogHeader>
-          {selected && (
-            <div className="space-y-2 mt-2">
-              <div><b>Name:</b> {selected.name}</div>
-              <div><b>Email:</b> {selected.email}</div>
-              <div><b>Status:</b> <span className={clsx("px-2 py-1 rounded text-xs font-semibold", STATUS_COLORS[selected.status])}>
-                {selected.status}
-              </span></div>
-              <div><b>Point:</b> {selected.point} <span className="text-yellow-400">★</span></div>
-              <div><b>Phone:</b> {selected.phone}</div>
-              <div><b>Address:</b> {selected.address}</div>
-              <div><b>Tags:</b> {selected.tags.map(tag => (
-                <span key={tag} className="inline-block mr-1 bg-realestate-50 text-xs px-2 py-0.5 rounded">{tag}</span>
-              ))}</div>
-              <div><b>Notes:</b> <span className="text-gray-700">{selected.notes}</span></div>
-              <div>
-                <b>Houses Inspected Before:</b>
-                <ul className="ml-4 mt-1 list-disc space-y-1 text-sm">
-                  {selected.housesInspected.map(house => (
-                    <li key={house.id}>
-                      <span className="font-semibold">{house.address}</span> — <span className="text-gray-400">{house.date}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      
-      <AddInspectorDialog
-        isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        onSubmit={handleAddInspector}
-      />
     </div>
   );
 };
