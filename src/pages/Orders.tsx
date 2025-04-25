@@ -351,74 +351,93 @@ export default function Orders() {
                       </TableRow>
                     ))
                   ) : (
-                    paginatedOrders.map(order => (
-                      <TableRow key={order.id}>
-                        <TableCell className="font-medium">{order.orderNumber}</TableCell>
-                        <TableCell>{order.propertyAddress}</TableCell>
-                        <TableCell>{order.inspectorName}</TableCell>
-                        <TableCell>{order.inspectionDate}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
-                            {order.status.replace(/^\w/, c => c.toUpperCase())}
-                          </span>
-                        </TableCell>
-                        {/* Quick Actions Cell */}
-                        <TableCell className="text-right">
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="bg-orange-100 hover:bg-orange-200 text-orange-600"
-                              title="Reminder"
-                              onClick={() => alert("Send reminder")}
+                    paginatedOrders.map(order => {
+                      // Animation state for this row's actions menu
+                      const [showActions, setShowActions] = useState(false);
+
+                      return (
+                        <TableRow key={order.id}
+                          onMouseEnter={() => setShowActions(true)}
+                          onMouseLeave={() => setShowActions(false)}
+                        >
+                          <TableCell className="font-medium">{order.orderNumber}</TableCell>
+                          <TableCell>{order.propertyAddress}</TableCell>
+                          <TableCell>{order.inspectorName}</TableCell>
+                          <TableCell>{order.inspectionDate}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-md text-xs font-semibold ${statusColors[order.status]} transition-colors duration-300`}>
+                              {order.status.replace(/^\w/, c => c.toUpperCase())}
+                            </span>
+                          </TableCell>
+                          {/* Quick Actions Cell */}
+                          <TableCell className="text-right">
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                                title="Reminder"
+                                onClick={() => alert("Send reminder")}
+                              >
+                                <Bell className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                                title="Send Invoice"
+                                onClick={() => alert("Send invoice")}
+                              >
+                                <Send className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="bg-green-100 hover:bg-green-200 text-green-700"
+                                title="Add Note"
+                                onClick={() => alert("Add note")}
+                              >
+                                <FilePlus className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="bg-pink-100 hover:bg-pink-200 text-pink-700"
+                                title="Apply Coupon"
+                                onClick={() => alert("Apply coupon")}
+                              >
+                                <Percent className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          {/* Actions Cell */}
+                          <TableCell className="text-right relative">
+                            {/* Animate dropdown container */}
+                            <div
+                              className={`transition-opacity transition-transform duration-1000 ${
+                                showActions ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+                              }`}
+                              style={{
+                                transitionProperty: 'opacity, transform',
+                                transitionDuration: '1s'
+                              }}
                             >
-                              <Bell className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                              title="Send Invoice"
-                              onClick={() => alert("Send invoice")}
-                            >
-                              <Send className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="bg-green-100 hover:bg-green-200 text-green-700"
-                              title="Add Note"
-                              onClick={() => alert("Add note")}
-                            >
-                              <FilePlus className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="bg-pink-100 hover:bg-pink-200 text-pink-700"
-                              title="Apply Coupon"
-                              onClick={() => alert("Apply coupon")}
-                            >
-                              <Percent className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                        {/* Actions Cell */}
-                        <TableCell className="text-right">
-                          <OrderActions
-                            onView={() => handleView(order)}
-                            onEdit={() => handleEdit(order)}
-                            onSchedule={() => handleSchedule(order)}
-                            onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
-                            onChangeStatus={(s) => handleChangeStatus(order.id, s)}
-                            currentStatus={order.status}
-                          />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
-                        </TableCell>
-                      </TableRow>
-                    ))
+                              <OrderActions
+                                onView={() => handleView(order)}
+                                onEdit={() => handleEdit(order)}
+                                onSchedule={() => handleSchedule(order)}
+                                onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                                onChangeStatus={(s) => handleChangeStatus(order.id, s)}
+                                currentStatus={order.status}
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
