@@ -4,23 +4,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
 import DashboardHeader from '@/components/DashboardHeader';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Building, Eye, Edit, FileText } from "lucide-react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Plus, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+import CompaniesSearch from "@/components/companies/CompaniesSearch";
+import CompaniesTable from "@/components/companies/CompaniesTable";
+import CompaniesPagination from "@/components/companies/CompaniesPagination";
 
 const dummyLogos = [
   "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=60&h=60&fit=crop",
@@ -101,13 +90,7 @@ const Companies = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
             <div className="w-full sm:w-auto flex-1">
-              <Input
-                type="search"
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Search companies…"
-                className="w-full max-w-md"
-              />
+              <CompaniesSearch search={search} onChange={handleSearchChange} />
             </div>
             <Button
               onClick={handleAddClick}
@@ -120,82 +103,15 @@ const Companies = () => {
           </div>
           
           <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px]">
-            {paginatedCompanies.length === 0 ? (
-              <div className="p-6 flex items-center justify-center text-gray-500">
-                <span>No companies found.</span>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Logo</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Owner</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCompanies.map(company => (
-                    <TableRow key={company.id}>
-                      <TableCell>
-                        <img src={company.logo} alt={company.name} className="w-8 h-8 rounded-full object-cover border" />
-                      </TableCell>
-                      <TableCell>{company.name}</TableCell>
-                      <TableCell>{company.owner}</TableCell>
-                      <TableCell>{company.email}</TableCell>
-                      <TableCell>{company.address}</TableCell>
-                      <TableCell className="text-center">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="icon">
-                              <Eye className="w-4 h-4" />
-                              <span className="sr-only">Actions</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Edit className="w-4 h-4 mr-2" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Eye className="w-4 h-4 mr-2" /> View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <FileText className="w-4 h-4 mr-2" /> View Report
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+            <CompaniesTable companies={paginatedCompanies} />
           </div>
           
-          {/* Pagination controls */}
-          <div className="flex justify-between items-center mt-6">
-            <Button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4"
-              variant="outline"
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-gray-700">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || totalPages === 0}
-              className="px-4"
-              variant="outline"
-            >
-              Next
-            </Button>
-          </div>
+          <CompaniesPagination
+            page={page}
+            totalPages={totalPages}
+            onPrevious={() => setPage((p) => Math.max(1, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+          />
         </main>
       </div>
     </div>
