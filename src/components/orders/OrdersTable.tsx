@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableHeader,
@@ -50,9 +49,6 @@ export default function OrdersTable({
   handleSchedule,
   handleChangeStatus,
 }: OrdersTableProps) {
-  // The useState for showActions should be up here, NOT inside map!
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
-
   return (
     <div className="rounded-md border bg-white p-0 shadow-sm min-h-[200px] overflow-x-auto">
       <Table>
@@ -93,8 +89,6 @@ export default function OrdersTable({
             paginatedOrders.map(order => (
               <TableRow
                 key={order.id}
-                onMouseEnter={() => setHoveredRow(order.id)}
-                onMouseLeave={() => setHoveredRow(null)}
               >
                 <TableCell className="font-medium">{order.orderNumber}</TableCell>
                 <TableCell>{order.propertyAddress}</TableCell>
@@ -110,7 +104,7 @@ export default function OrdersTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="bg-orange-100 hover:bg-orange-200 text-orange-600"
+                      className="bg-orange-100 hover:bg-orange-200 text-orange-600 hover:animate-shake"
                       title="Reminder"
                       onClick={() => alert("Send reminder")}
                     >
@@ -119,7 +113,7 @@ export default function OrdersTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                      className="bg-blue-100 hover:bg-blue-200 text-blue-700 hover:animate-shake"
                       title="Send Invoice"
                       onClick={() => alert("Send invoice")}
                     >
@@ -128,7 +122,7 @@ export default function OrdersTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="bg-green-100 hover:bg-green-200 text-green-700"
+                      className="bg-green-100 hover:bg-green-200 text-green-700 hover:animate-shake"
                       title="Add Note"
                       onClick={() => alert("Add note")}
                     >
@@ -137,7 +131,7 @@ export default function OrdersTable({
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="bg-pink-100 hover:bg-pink-200 text-pink-700"
+                      className="bg-pink-100 hover:bg-pink-200 text-pink-700 hover:animate-shake"
                       title="Apply Coupon"
                       onClick={() => alert("Apply coupon")}
                     >
@@ -146,24 +140,14 @@ export default function OrdersTable({
                   </div>
                 </TableCell>
                 <TableCell className="text-right relative">
-                  <div
-                    className={`transition-opacity transition-transform duration-1000 ${
-                      hoveredRow === order.id ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-                    }`}
-                    style={{
-                      transitionProperty: 'opacity, transform',
-                      transitionDuration: '1s'
-                    }}
-                  >
-                    <OrderActions
-                      onView={(e?: React.MouseEvent) => handleView(order, e)} // Allow e as optional
-                      onEdit={() => handleEdit(order)}
-                      onSchedule={() => handleSchedule(order)}
-                      onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
-                      onChangeStatus={(s) => handleChangeStatus(order.id, s)}
-                      currentStatus={order.status}
-                    />
-                  </div>
+                  <OrderActions
+                    onView={(e?: React.MouseEvent) => handleView(order, e)}
+                    onEdit={() => handleEdit(order)}
+                    onSchedule={() => handleSchedule(order)}
+                    onCancel={() => alert(`Cancel order #${order.orderNumber}`)}
+                    onChangeStatus={(s) => handleChangeStatus(order.id, s)}
+                    currentStatus={order.status}
+                  />
                 </TableCell>
                 <TableCell className="text-right">
                   {order.cost > 0 ? `$${order.cost.toLocaleString()}` : "-"}

@@ -118,3 +118,5 @@
   background-size: cover;
   background-position: center;
 }
+
+@import './styles/shake-animation.css';
