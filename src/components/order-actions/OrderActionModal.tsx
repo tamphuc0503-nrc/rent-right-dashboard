@@ -1,10 +1,18 @@
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Send, FileText, Phone, Contract, X } from "lucide-react";
+import { Mail, Send, FileText, Phone, Contact, X } from "lucide-react";
 
 interface OrderActionModalProps {
   open: boolean;
@@ -18,7 +26,7 @@ const ICONS = {
   invoice: <FileText className="mr-2 h-5 w-5" />,
   emailReminder: <Mail className="mr-2 h-5 w-5" />,
   smsReminder: <Phone className="mr-2 h-5 w-5" />,
-  agreement: <Contract className="mr-2 h-5 w-5" />,
+  agreement: <Contact className="mr-2 h-5 w-5" />,
 };
 
 const TYPE_TITLE = {
@@ -64,14 +72,23 @@ export const OrderActionModal: React.FC<OrderActionModalProps> = ({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 mt-3">
-          <Input label="Client Name" readOnly value={client.name} className="bg-gray-100" />
-          <Input label="Client Email" readOnly value={client.email} className="bg-gray-100" />
-          <Input
-            label="CC"
-            placeholder="Enter additional email(s) or phone (for SMS), comma separated"
-            value={cc}
-            onChange={e => setCc(e.target.value)}
-          />
+          <div>
+            <label htmlFor="client-name" className="block text-sm font-medium mb-1">Client Name</label>
+            <Input id="client-name" readOnly value={client.name} className="bg-gray-100" />
+          </div>
+          <div>
+            <label htmlFor="client-email" className="block text-sm font-medium mb-1">Client Email</label>
+            <Input id="client-email" readOnly value={client.email} className="bg-gray-100" />
+          </div>
+          <div>
+            <label htmlFor="cc-input" className="block text-sm font-medium mb-1">CC</label>
+            <Input
+              id="cc-input"
+              placeholder="Enter additional email(s) or phone (for SMS), comma separated"
+              value={cc}
+              onChange={e => setCc(e.target.value)}
+            />
+          </div>
           {showTemplate && (
             <div>
               <label className="block text-sm font-medium mb-1">Template</label>
@@ -87,7 +104,9 @@ export const OrderActionModal: React.FC<OrderActionModalProps> = ({
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium mb-1">{type === "agreement" ? "Agreement" : "Description"}</label>
+            <label className="block text-sm font-medium mb-1">
+              {type === "agreement" ? "Agreement" : "Description"}
+            </label>
             <Textarea
               value={desc}
               onChange={e => setDesc(e.target.value)}
