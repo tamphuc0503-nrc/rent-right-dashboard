@@ -23,6 +23,7 @@ import ChangePassword from "./pages/settings/ChangePassword";
 import Notifications from "./pages/settings/Notifications";
 import DocusignKeys from "./pages/settings/DocusignKeys";
 import CustomFields from "./pages/settings/CustomFields";
+import Templates from "./pages/settings/Templates";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="notifications" element={<Notifications />} />
               <Route path="docusign" element={<DocusignKeys />} />
               <Route path="custom-fields" element={<CustomFields />} />
+              <Route path="templates" element={<Templates />} /> {/* Added Templates route */}
             </Route>
             <Route path="/calendar/scheduling" element={<SchedulingCalendar />} />
             <Route path="/calendar/upcoming/orders" element={<MyUpcomingOrders />} />

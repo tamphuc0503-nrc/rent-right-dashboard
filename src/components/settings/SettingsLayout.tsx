@@ -33,6 +33,11 @@ const settingsMenuItems = [
     title: "Custom Fields",
     path: "/settings/custom-fields",
     description: "Configure custom data fields"
+  },
+  {
+    title: "Templates",
+    path: "/settings/templates",
+    description: "Customize templates for outgoing messages"
   }
 ];
 

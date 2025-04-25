@@ -1,4 +1,3 @@
-
 import {
   BarChart3,
   Users,
@@ -50,7 +49,7 @@ export const sidebarItems: SidebarItem[] = [
       { title: 'Change Password', path: '/settings/password' },
       { title: 'DocuSign Keys', path: '/settings/docusign' },
       { title: 'Custom Fields', path: '/settings/custom-fields' },
+      { title: 'Templates', path: '/settings/templates' },
     ],
   },
 ];
-
