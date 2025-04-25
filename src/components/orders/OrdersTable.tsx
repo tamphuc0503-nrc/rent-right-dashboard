@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableHeader,
@@ -105,7 +104,6 @@ export default function OrdersTable({
                       {order.status.replace(/^\w/, c => c.toUpperCase())}
                     </span>
                   </TableCell>
-                  {/* Quick Actions */}
                   <TableCell className="text-right">
                     <div className="flex gap-2 justify-end">
                       <Button
@@ -146,7 +144,6 @@ export default function OrdersTable({
                       </Button>
                     </div>
                   </TableCell>
-                  {/* Actions with fade-in animation on hover */}
                   <TableCell className="text-right relative">
                     <div
                       className={`transition-opacity transition-transform duration-1000 ${
@@ -158,7 +155,7 @@ export default function OrdersTable({
                       }}
                     >
                       <OrderActions
-                        onView={() => handleView(order)}
+                        onView={(e: React.MouseEvent) => handleView(order, e)}
                         onEdit={() => handleEdit(order)}
                         onSchedule={() => handleSchedule(order)}
                         onCancel={() => alert(`Cancel order #${order.orderNumber}`)}

@@ -102,8 +102,7 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState<InspectionOrder | null>(null);
   const [modalMode, setModalMode] = useState<'view' | 'edit' | 'add'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  const [selectedOrderForSchedule, setSelectedOrderForSchedule] = useState<InspectionOrder | null>(null);
+  const [modalAnchorPoint, setModalAnchorPoint] = useState<{ x: number; y: number } | undefined>();
   const [layout, setLayout] = useState<'grid' | 'list'>('list');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -128,7 +127,7 @@ export default function Orders() {
     setIsModalOpen(true);
   };
 
-  const handleView = (order: InspectionOrder) => {
+  const handleView = (order: InspectionOrder, e?: React.MouseEvent) => {
     setModalMode('view');
     setSelectedOrder({
       ...order,
@@ -151,6 +150,7 @@ export default function Orders() {
         },
       ],
     });
+    setModalAnchorPoint(e ? { x: e.clientX, y: e.clientY } : undefined);
     setIsModalOpen(true);
   };
 
@@ -224,14 +224,14 @@ export default function Orders() {
               paginatedOrders={paginatedOrders}
               isLoading={isLoading}
               statusColors={statusColors}
-              handleView={handleView}
+              handleView={(order: InspectionOrder, e?: React.MouseEvent) => handleView(order, e)}
             />
           ) : (
             <OrdersTable
               paginatedOrders={paginatedOrders}
               isLoading={isLoading}
               statusColors={statusColors}
-              handleView={handleView}
+              handleView={(order: InspectionOrder, e?: React.MouseEvent) => handleView(order, e)}
               handleEdit={handleEdit}
               handleSchedule={handleSchedule}
               handleChangeStatus={handleChangeStatus}
@@ -246,6 +246,7 @@ export default function Orders() {
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
         order={selectedOrder || undefined}
+        anchorPoint={modalAnchorPoint}
       />
       <ScheduleOrderModal
         isOpen={isScheduleModalOpen}

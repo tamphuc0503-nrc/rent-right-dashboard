@@ -1,14 +1,7 @@
+
 import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GeneralSection } from "./order-form/GeneralSection";
 import { PropertySection } from "./order-form/PropertySection";
 import { ServicesSection } from "./order-form/ServicesSection";
@@ -16,6 +9,8 @@ import { AgentsSection } from "./order-form/AgentsSection";
 import { FeesSection } from "./order-form/FeesSection";
 import { ExternalLink } from "lucide-react";
 import { OrderDetailsContent } from "./order-form/OrderDetailsContent";
+import { AnimatedPopover } from "@/components/ui/AnimatedPopover";
+import React, { useState } from "react";
 
 interface Activity {
   id: string;
@@ -41,6 +36,7 @@ type OrderDetailsModalProps = {
     clientTags?: string[];
     activities?: Activity[];
   };
+  anchorPoint?: { x: number; y: number }; // NEW: where to show the popover from
 };
 
 export default function OrderDetailsModal({
@@ -48,6 +44,7 @@ export default function OrderDetailsModal({
   onClose,
   mode,
   order,
+  anchorPoint,
 }: OrderDetailsModalProps) {
   const form = useForm({
     defaultValues: {
@@ -89,42 +86,38 @@ export default function OrderDetailsModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] h-[70vh] max-h-[70vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {mode === 'view'
-              ? (
-                  <>
-                    Order {order?.orderNumber ?? ""}
-                    {order?.id && (
-                      <button
-                        className="ml-2 text-gray-500 hover:text-blue-500"
-                        onClick={handleOpenInNewTab}
-                        type="button"
-                        tabIndex={0}
-                        aria-label="Open order in new tab"
-                      >
-                        <ExternalLink size={18} />
-                      </button>
-                    )}
-                  </>
-                )
-              : mode === 'add'
-                ? 'New Inspection Order'
-                : 'Edit Inspection Order'
-            }
-          </DialogTitle>
-        </DialogHeader>
-
+    <AnimatedPopover open={isOpen} onOpenChange={o => !o && onClose()} anchorPoint={anchorPoint}>
+      <div className="w-[400px] max-w-full h-[70vh] max-h-[70vh] flex flex-col">
+        <div className="flex items-center gap-2 mb-4 text-lg font-semibold">
+          {mode === 'view'
+            ? (
+                <>
+                  Order {order?.orderNumber ?? ""}
+                  {order?.id && (
+                    <button
+                      className="ml-2 text-gray-500 hover:text-blue-500"
+                      onClick={handleOpenInNewTab}
+                      type="button"
+                      tabIndex={0}
+                      aria-label="Open order in new tab"
+                    >
+                      <ExternalLink size={18} />
+                    </button>
+                  )}
+                </>
+              )
+            : mode === 'add'
+              ? 'New Inspection Order'
+              : 'Edit Inspection Order'
+          }
+        </div>
         <Form {...form}>
           <form className="flex-1 overflow-hidden">
             <OrderDetailsContent order={order || {}} form={form} editable={mode !== 'view'} />
           </form>
         </Form>
-
         {mode !== 'view' && (
-          <DialogFooter className="border-t pt-4">
+          <div className="border-t pt-4 flex gap-2 justify-end">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
@@ -134,9 +127,9 @@ export default function OrderDetailsModal({
             })}>
               {mode === 'add' ? 'Create' : 'Save Changes'}
             </Button>
-          </DialogFooter>
+          </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </AnimatedPopover>
   );
 }
