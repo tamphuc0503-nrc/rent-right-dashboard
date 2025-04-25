@@ -1,3 +1,4 @@
+
 import {
   BarChart3,
   Users,
@@ -6,14 +7,30 @@ import {
   Settings,
   ClipboardList,
   Calendar,
+  Clock4
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
+
+// Dummy recents data, these can be replaced with real logic later
+const recentOrderIds = [
+  { title: "ORD-10005", path: "/orders" },
+  { title: "ORD-10043", path: "/orders" },
+  { title: "ORD-10122", path: "/orders" },
+  { title: "ORD-10237", path: "/orders" },
+  { title: "ORD-10300", path: "/orders" },
+];
 
 export const sidebarItems: SidebarItem[] = [
   {
     title: 'Dashboard',
     icon: BarChart3,
     path: '/dashboard',
+  },
+  {
+    title: 'Recents',
+    icon: Clock4,
+    path: '',
+    subItems: recentOrderIds,
   },
   {
     title: 'Orders',

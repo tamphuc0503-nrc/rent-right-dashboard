@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -15,8 +14,8 @@ import { PropertySection } from "./order-form/PropertySection";
 import { ServicesSection } from "./order-form/ServicesSection";
 import { AgentsSection } from "./order-form/AgentsSection";
 import { FeesSection } from "./order-form/FeesSection";
+import { ExternalLink } from "lucide-react";
 
-// Define the Activity type that was missing
 interface Activity {
   id: string;
   date: string;
@@ -55,7 +54,6 @@ export default function OrderDetailsModal({
       clientEmail: order?.clientEmail || "",
       clientPhone: order?.clientPhone || "",
       status: order?.status || "pending",
-      // Property fields
       propertyType: "",
       yearBuilt: "",
       propertyAge: "",
@@ -67,18 +65,15 @@ export default function OrderDetailsModal({
       isOccupied: false,
       hasUtilities: false,
       hasAlarm: false,
-      // Services
       services: {
         flexfund: false,
         mold: false,
       },
-      // Agent fields
       agentName: "",
       agentEmail: "",
       agentPhone: "",
       isSeller: false,
       isBuyer: false,
-      // Fee fields
       inspectionFee: "",
       thirdPartyFee: "",
       discountFee: "",
@@ -86,12 +81,38 @@ export default function OrderDetailsModal({
     },
   });
 
+  const handleOpenInNewTab = () => {
+    if (order?.id) {
+      window.open(`/orders/${order.id}`, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] h-[70vh] max-h-[70vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>
-            {mode === 'add' ? 'New Inspection Order' : mode === 'edit' ? 'Edit Inspection Order' : 'View Inspection Order'}
+          <DialogTitle className="flex items-center gap-2">
+            {mode === 'view'
+              ? (
+                  <>
+                    Order {order?.orderNumber ?? ""}
+                    {order?.id && (
+                      <button
+                        className="ml-2 text-gray-500 hover:text-blue-500"
+                        onClick={handleOpenInNewTab}
+                        type="button"
+                        tabIndex={0}
+                        aria-label="Open order in new tab"
+                      >
+                        <ExternalLink size={18} />
+                      </button>
+                    )}
+                  </>
+                )
+              : mode === 'add'
+                ? 'New Inspection Order'
+                : 'Edit Inspection Order'
+            }
           </DialogTitle>
         </DialogHeader>
 
@@ -125,6 +146,24 @@ export default function OrderDetailsModal({
             </Tabs>
           </form>
         </Form>
+
+        {mode === "view" && order?.activities && (
+          <div className="border-t pt-3 mt-4 max-h-44 overflow-y-auto">
+            <div className="font-semibold mb-2 text-gray-800">Activity</div>
+            {order.activities.length === 0 ? (
+              <div className="text-gray-500 text-sm">No activity to show.</div>
+            ) : (
+              <ul className="space-y-2">
+                {order.activities.map((a, idx) => (
+                  <li key={a.id || idx} className="flex flex-col py-1 px-2 bg-gray-50 rounded">
+                    <span className="text-xs text-gray-600">{a.date} &mdash; <span className="font-medium">{a.type}</span></span>
+                    <span className="text-sm">{a.description}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {mode !== 'view' && (
           <DialogFooter className="border-t pt-4">
