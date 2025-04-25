@@ -57,8 +57,11 @@ const DashboardHeader = () => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard/profile">Profile</Link>
+                <DropdownMenuItem
+                  onClick={() => navigate('/dashboard/profile')}
+                  className="cursor-pointer"
+                >
+                  Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link to="/dashboard/settings" className="w-full">Settings</Link>
@@ -77,3 +80,4 @@ const DashboardHeader = () => {
 };
 
 export default DashboardHeader;
+

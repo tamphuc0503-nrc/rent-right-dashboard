@@ -1,3 +1,4 @@
+
 import {
   BarChart3,
   Users,
@@ -8,7 +9,7 @@ import {
   Calendar,
   Clock4,
   Mail,
-  User
+  // User // REMOVE this import, since we will not use it
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
@@ -48,6 +49,7 @@ function getRecentsSubItems() {
   return fullList.slice(0, 5);
 }
 
+// REMOVE the Profile item from sidebarItems
 export const sidebarItems: SidebarItem[] = [
   {
     title: 'Dashboard',
@@ -80,11 +82,7 @@ export const sidebarItems: SidebarItem[] = [
     icon: Mail,
     path: '/messages',
   },
-  {
-    title: 'Profile',
-    icon: User,
-    path: '/dashboard/profile',
-  },
+  // Profile item REMOVED HERE
   {
     title: 'Inspectors',
     icon: UserCircle,
@@ -108,3 +106,4 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
+
