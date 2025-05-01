@@ -33,6 +33,7 @@ export function SettingsPanel({ open, onClose, initialTab = "general" }: Setting
     setTab(initialTab);
   }, [initialTab]);
 
+  // The panel is now only used for direct access from the UI, not from the sidebar
   if (!open) return null;
   return (
     <div className="fixed inset-0 bg-black/10 z-50 flex items-stretch">

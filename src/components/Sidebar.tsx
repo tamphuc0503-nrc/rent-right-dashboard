@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
@@ -6,8 +7,6 @@ import { cn } from '@/lib/utils';
 import { useSidebarNavigation } from '@/hooks/use-sidebar-navigation';
 import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
 import { sidebarItems } from '@/config/navigation';
-import SettingsPanel from "@/components/settings/SettingsPanel";
-import ClientsPanel from "@/components/clients/ClientsPanel";
 import { SidebarProfile } from "@/components/sidebar/SidebarProfile";
 import { useNavigate } from 'react-router-dom';
 
@@ -17,30 +16,18 @@ type SidebarProps = {
 
 const Sidebar = ({ isMobile = false }: SidebarProps) => {
   const { isOpen, expandedItems, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsTab, setSettingsTab] = useState<undefined | string>(undefined);
   const [clientsPanelOpen, setClientsPanelOpen] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSidebarItemClick = (item: any) => {
-    if (item.title === "Settings") {
-      setSettingsOpen(true);
-      setSettingsTab("general");
-    } else {
-      handleParentItemClick(item);
-    }
+    handleParentItemClick(item);
   };
 
   const handleSidebarSubMenuClick = (
     item: any,
     subItem: { title: string; path: string }
   ) => {
-    if (item.title === "Settings") {
-      setSettingsTab(subItem.path);
-      setSettingsOpen(true);
-      return;
-    }
     if (item.title === "Externals" && subItem.title === "Clients") {
       setClientsPanelOpen(true);
       return;
@@ -101,11 +88,6 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
         </nav>
         <SidebarProfile isOpen={isOpen} />
       </aside>
-      <SettingsPanel
-        open={settingsOpen}
-        initialTab={settingsTab}
-        onClose={() => setSettingsOpen(false)}
-      />
       <ClientsPanel
         open={clientsPanelOpen}
         onClose={() => setClientsPanelOpen(false)}
