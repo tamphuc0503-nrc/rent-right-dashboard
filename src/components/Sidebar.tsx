@@ -9,6 +9,7 @@ import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
 import { sidebarItems } from '@/config/navigation';
 import { SidebarProfile } from "@/components/sidebar/SidebarProfile";
 import { useNavigate } from 'react-router-dom';
+import ClientsPanel from '@/components/clients/ClientsPanel';
 
 type SidebarProps = {
   isMobile?: boolean;
