@@ -23,12 +23,11 @@ import {
 } from '@/components/ui/popover';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, sub, startOfDay, endOfDay } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 const IncomeReport = () => {
-  const [dateRange, setDateRange] = useState<{
-    from?: Date;
-    to?: Date;
-  }>({
+  // Updated to use the correct DateRange type
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: sub(new Date(), { days: 7 }),
     to: new Date(),
   });
@@ -64,7 +63,7 @@ const IncomeReport = () => {
   
   // Generate data for the chart based on selected timeframe
   const generateChartData = () => {
-    if (timeframe === 'custom' && (!dateRange.from || !dateRange.to)) {
+    if (timeframe === 'custom' && (!dateRange?.from || !dateRange?.to)) {
       return [];
     }
     
@@ -72,7 +71,7 @@ const IncomeReport = () => {
                 timeframe === '2weeks' ? 14 : 
                 timeframe === '3weeks' ? 21 : 
                 timeframe === '1month' ? 30 : 
-                Math.ceil((dateRange.to!.getTime() - dateRange.from!.getTime()) / (1000 * 60 * 60 * 24));
+                Math.ceil((dateRange?.to!.getTime() - dateRange?.from!.getTime()) / (1000 * 60 * 60 * 24));
 
     return Array.from({ length: days }).map((_, i) => {
       const date = sub(new Date(), { days: days - i - 1 });
@@ -171,7 +170,7 @@ const IncomeReport = () => {
               >
                 <Calendar className="h-4 w-4" />
                 <span>
-                  {dateRange.from && dateRange.to ? (
+                  {dateRange?.from && dateRange?.to ? (
                     <>
                       {format(dateRange.from, 'MMM d, yyyy')} - {format(dateRange.to, 'MMM d, yyyy')}
                     </>
@@ -185,14 +184,10 @@ const IncomeReport = () => {
               <CalendarComponent
                 mode="range"
                 selected={dateRange}
-                onSelect={(range) => {
-                  setDateRange(range || {});
-                  if (range?.from && range?.to) {
-                    setTimeframe('custom');
-                  }
-                }}
+                onSelect={setDateRange}
                 numberOfMonths={2}
-                defaultMonth={dateRange.from}
+                defaultMonth={dateRange?.from}
+                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
