@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Sidebar from '@/components/Sidebar';
@@ -20,11 +21,10 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import OrderActions from "@/components/OrderActions";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import OrderDetailsModal from '@/components/OrderDetailsModal';
 import ScheduleOrderModal from '@/components/ScheduleOrderModal';
 import { Button } from "@/components/ui/button";
-import { Bell, Send, FilePlus, Percent } from "lucide-react";
 import OrdersTable from "@/components/orders/OrdersTable";
 import OrdersMobileCards from "@/components/orders/OrdersMobileCards";
 import OrdersPagination from "@/components/orders/OrdersPagination";
@@ -114,7 +114,7 @@ export default function Orders() {
     const timer = setTimeout(() => {
       setOrders(generateSampleOrders(100));
       setIsLoading(false);
-    }, 2000);
+    }, 1000); // Reduced timeout for better UX
 
     return () => clearTimeout(timer);
   }, []);
@@ -174,7 +174,6 @@ export default function Orders() {
     toast({
       title: "Status Changed",
       description: `Order #${orders.find(o => o.id === orderId)?.orderNumber} is now "${newStatus.replace(/^\w/, c => c.toUpperCase())}".`,
-      duration: 2000,
     });
   };
 
@@ -200,7 +199,9 @@ export default function Orders() {
   const endIdx = startIdx + ORDERS_PER_PAGE;
   const paginatedOrders = filteredOrders.slice(startIdx, endIdx);
 
-  if (page > totalPages && totalPages > 0) setPage(totalPages);
+  if (page > totalPages && totalPages > 0) {
+    setPage(totalPages);
+  }
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -272,7 +273,11 @@ export default function Orders() {
             />
           )}
 
-          <OrdersPagination page={page} totalPages={totalPages} setPage={setPage} />
+          <OrdersPagination 
+            page={page} 
+            totalPages={totalPages} 
+            setPage={(updater) => setPage(updater(page))} 
+          />
         </main>
       </div>
       <OrderDetailsModal
