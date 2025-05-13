@@ -1,3 +1,4 @@
+
 import {
   BarChart3,
   Users,
@@ -7,6 +8,8 @@ import {
   Calendar,
   Clock4,
   Mail,
+  BarChart,
+  DollarSign,
 } from 'lucide-react';
 import { SidebarItem } from '@/types/sidebar';
 import { getRecentOrderIds } from '@/utils/recentOrders';
@@ -82,6 +85,15 @@ export const sidebarItems: SidebarItem[] = [
     subItems: [
       { title: "Clients", path: "/clients" },
       { title: "Agents", path: "/agents" },
+    ],
+  },
+  {
+    title: 'Reports',
+    icon: BarChart,
+    path: '',
+    subItems: [
+      { title: 'Inspection Report', path: '/reports/inspection' },
+      { title: 'Income Report', path: '/reports/income' },
     ],
   },
   {

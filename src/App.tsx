@@ -32,6 +32,8 @@ import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Clients from "./pages/Clients";
 import Agents from "./pages/Agents";
+import InspectionReport from "./pages/reports/InspectionReport";
+import IncomeReport from "./pages/reports/IncomeReport";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +78,8 @@ const App = () => (
               <Route path="/messages" element={<Messages />} />
               <Route path="/clients" element={<Clients />} />
               <Route path="/agents" element={<Agents />} />
+              <Route path="/reports/inspection" element={<InspectionReport />} />
+              <Route path="/reports/income" element={<IncomeReport />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
