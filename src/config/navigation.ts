@@ -90,7 +90,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: 'Reports',
     icon: BarChart,
-    path: '',
+    path: '/reports',
     subItems: [
       { title: 'Inspection Report', path: '/reports/inspection' },
       { title: 'Income Report', path: '/reports/income' },

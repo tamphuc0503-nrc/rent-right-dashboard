@@ -42,7 +42,7 @@ const IncomeReport = () => {
   const completedOrders = getCompletedOrdersCount();
 
   return (
-    <div className="container mx-auto py-8">
+    <>
       <h1 className="text-2xl font-bold mb-6">Income Report</h1>
       
       <IncomeReportHeader 
@@ -61,7 +61,7 @@ const IncomeReport = () => {
         
         <IncomeChart chartData={chartData} />
       </div>
-    </div>
+    </>
   );
 };
 

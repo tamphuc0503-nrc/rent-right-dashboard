@@ -54,7 +54,7 @@ const InspectionReport = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <>
       <h1 className="text-2xl font-bold mb-6">Inspection Report</h1>
       
       <div className="grid gap-6 md:grid-cols-[300px_1fr]">
@@ -133,7 +133,7 @@ const InspectionReport = () => {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -22,7 +22,7 @@ export function SidebarMenuItem({
   currentPath,
   onSubMenuClick,
 }: SidebarMenuItemProps) {
-  const isParentActive = !!item.subItems && item.subItems.some(sub => sub.path === currentPath);
+  const isParentActive = !!item.subItems && item.subItems.some(sub => currentPath.includes(sub.path));
   const isThisActive = !item.subItems && currentPath === item.path;
   const isExpanded = expandedItems.includes(item.title);
 
@@ -60,13 +60,11 @@ export function SidebarMenuItem({
               <li key={subItem.title}>
                 <button
                   className={cn(
-                    "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600 w-full text-left"
+                    "block px-2 py-2 text-sm rounded-md hover:bg-accent/50 transition-colors text-gray-600 w-full text-left",
+                    currentPath.includes(subItem.path) && "bg-accent/70 text-accent-foreground font-medium"
                   )}
                   onClick={() => {
-                    // If Externals > Clients, prevent navigation and call submenu handler
-                    if (item.title === "Externals" && subItem.title === "Clients" && onSubMenuClick) {
-                      onSubMenuClick(item, subItem);
-                    } else if (onSubMenuClick) {
+                    if (onSubMenuClick) {
                       onSubMenuClick(item, subItem);
                     }
                   }}
