@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import GeneralSettings from "@/pages/settings/GeneralSettings";
 import CustomFields from "@/pages/settings/CustomFields";
@@ -29,7 +29,7 @@ const panelContents: Record<string, React.ReactNode> = {
 export function SettingsPanel({ open, onClose, initialTab = "general" }: SettingsPanelProps) {
   const [tab, setTab] = useState(initialTab);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTab(initialTab);
   }, [initialTab]);
 

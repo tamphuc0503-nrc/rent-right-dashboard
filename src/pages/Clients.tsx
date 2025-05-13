@@ -1,21 +1,23 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
-import { clients } from "@/data/clients";
 import { Filter } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { 
+  setSearchTerm, 
+  selectFilteredClients,
+  selectSearchTerm 
+} from "@/store/slices/clientsSlice";
 
 type DummyClientListProps = {
   noTitle?: boolean;
 };
 
 const DummyClientList = ({ noTitle = false }: DummyClientListProps) => {
-  const [search, setSearch] = useState("");
-  const filtered = clients.filter(
-    c =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search)
-  );
+  const dispatch = useAppDispatch();
+  const search = useAppSelector(selectSearchTerm);
+  const filtered = useAppSelector(selectFilteredClients);
+  
   return (
     <div className="max-w-2xl mx-auto py-8">
       {!noTitle && <h1 className="text-2xl font-bold mb-4">Clients</h1>}
@@ -23,7 +25,7 @@ const DummyClientList = ({ noTitle = false }: DummyClientListProps) => {
         <Input
           placeholder="Search clients..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => dispatch(setSearchTerm(e.target.value))}
         />
         <button
           type="button"

@@ -1,28 +1,38 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useSidebarNavigation } from '@/hooks/use-sidebar-navigation';
 import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
 import { sidebarItems } from '@/config/navigation';
 import { SidebarProfile } from "@/components/sidebar/SidebarProfile";
-import { useNavigate } from 'react-router-dom';
 import ClientsPanel from '@/components/clients/ClientsPanel';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { 
+  toggleSidebar, 
+  toggleExpandedItem, 
+  setClientsPanelOpen,
+  selectSidebarIsOpen,
+  selectExpandedItems,
+  selectClientsPanelOpen
+} from '@/store/slices/sidebarSlice';
 
 type SidebarProps = {
   isMobile?: boolean;
 };
 
 const Sidebar = ({ isMobile = false }: SidebarProps) => {
-  const { isOpen, expandedItems, location, toggleSidebar, handleParentItemClick } = useSidebarNavigation(isMobile);
-  const [clientsPanelOpen, setClientsPanelOpen] = useState(false);
-
+  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
+  const isOpen = useAppSelector(selectSidebarIsOpen);
+  const expandedItems = useAppSelector(selectExpandedItems);
+  const clientsPanelOpen = useAppSelector(selectClientsPanelOpen);
 
   const handleSidebarItemClick = (item: any) => {
-    handleParentItemClick(item);
+    dispatch(toggleExpandedItem(item.title));
   };
 
   const handleSidebarSubMenuClick = (
@@ -30,12 +40,16 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
     subItem: { title: string; path: string }
   ) => {
     if (item.title === "Externals" && subItem.title === "Clients") {
-      setClientsPanelOpen(true);
+      dispatch(setClientsPanelOpen(true));
       return;
     }
     if (subItem.path) {
       navigate(subItem.path);
     }
+  };
+
+  const handleToggleSidebar = () => {
+    dispatch(toggleSidebar());
   };
 
   return (
@@ -45,7 +59,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
           variant="ghost"
           size="icon"
           className="fixed top-4 left-4 z-50 md:hidden"
-          onClick={toggleSidebar}
+          onClick={handleToggleSidebar}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </Button>
@@ -66,7 +80,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
               variant="ghost"
               size="icon"
               className="hidden md:flex"
-              onClick={toggleSidebar}
+              onClick={handleToggleSidebar}
             >
               {isOpen ? <X size={18} /> : <Menu size={18} />}
             </Button>
@@ -91,7 +105,7 @@ const Sidebar = ({ isMobile = false }: SidebarProps) => {
       </aside>
       <ClientsPanel
         open={clientsPanelOpen}
-        onClose={() => setClientsPanelOpen(false)}
+        onClose={() => dispatch(setClientsPanelOpen(false))}
       />
     </>
   );
